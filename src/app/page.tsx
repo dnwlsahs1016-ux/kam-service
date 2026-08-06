@@ -1,12 +1,11 @@
-import Image from "next/image";
 import Link from "next/link";
 import { listIndustryGroups } from "@/db/queries";
 import { CompanySearch } from "@/components/CompanySearch";
 
 const GUIDE_STEPS = [
-  { src: "/guide/1-search.png", title: "1. 검색", desc: "기업 이름으로 검색하거나 업종에서 관심 분야를 선택하세요." },
-  { src: "/guide/2-checklist.png", title: "2. 확인", desc: "카테고리별 KAM 사례와 감사절차 체크리스트를 확인하세요." },
-  { src: "/guide/3-standard.png", title: "3. 기준서 이동", desc: "관련 기준서를 클릭하면 원문으로 바로 이동합니다." },
+  { src: "/guide/1-search.webm", title: "1. 검색", desc: "기업 이름으로 검색하거나 업종에서 관심 분야를 선택하세요." },
+  { src: "/guide/2-checklist.webm", title: "2. 확인", desc: "카테고리별 KAM 사례와 감사절차 체크리스트를 확인하세요." },
+  { src: "/guide/3-standard.webm", title: "3. 기준서 이동", desc: "관련 기준서를 클릭하면 원문으로 바로 이동합니다." },
 ];
 
 export default async function Home() {
@@ -33,13 +32,13 @@ export default async function Home() {
             {GUIDE_STEPS.map((step) => (
               <div key={step.title}>
                 <div className="overflow-hidden rounded-md border border-zinc-200 dark:border-zinc-800">
-                  <Image
+                  <video
                     src={step.src}
-                    alt={step.title}
-                    width={620}
-                    height={320}
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
                     className="w-full"
-                    unoptimized
                   />
                 </div>
                 <div className="mt-2 text-sm font-medium text-zinc-700 dark:text-zinc-300">
