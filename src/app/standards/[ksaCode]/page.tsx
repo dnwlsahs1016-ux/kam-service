@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { getStandard } from "@/db/queries";
+import { getAllStandardCodes, getStandard } from "@/db/queries";
 import { StandardParagraphText } from "@/components/StandardParagraph";
 
 export default async function StandardPage({
@@ -8,7 +8,7 @@ export default async function StandardPage({
   params: Promise<{ ksaCode: string }>;
 }) {
   const { ksaCode } = await params;
-  const paragraphs = await getStandard(ksaCode);
+  const [paragraphs, validCodes] = await Promise.all([getStandard(ksaCode), getAllStandardCodes()]);
 
   if (paragraphs.length === 0) notFound();
 
@@ -33,7 +33,7 @@ export default async function StandardPage({
             <div key={p.paraNo} id={`para-${p.paraNo}`} className="flex gap-3">
               <span className="w-12 shrink-0 text-sm text-zinc-400">{p.paraNo}.</span>
               <p className="text-sm leading-relaxed text-zinc-700 dark:text-zinc-300">
-                <StandardParagraphText content={p.content} />
+                <StandardParagraphText content={p.content} validCodes={validCodes} />
               </p>
             </div>
           ))}
@@ -49,7 +49,7 @@ export default async function StandardPage({
                 <div key={p.paraNo} id={`para-${p.paraNo}`} className="flex gap-3">
                   <span className="w-12 shrink-0 text-sm text-zinc-400">{p.paraNo}.</span>
                   <p className="text-sm leading-relaxed text-zinc-700 dark:text-zinc-300">
-                    <StandardParagraphText content={p.content} />
+                    <StandardParagraphText content={p.content} validCodes={validCodes} />
                   </p>
                 </div>
               ))}

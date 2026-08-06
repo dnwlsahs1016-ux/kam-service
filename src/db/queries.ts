@@ -155,3 +155,10 @@ export async function getStandard(ksaCode: string) {
     .orderBy(standards.id);
   return rows;
 }
+
+/** 문단 본문에서 "감사기준서 200" 같은 다른 기준서 언급을 링크로 바꿀 때, 실제 존재하는
+ * 코드만 링크로 만들기 위한 전체 코드 목록. */
+export async function getAllStandardCodes(): Promise<Set<string>> {
+  const rows = await db.selectDistinct({ ksaCode: standards.ksaCode }).from(standards);
+  return new Set(rows.map((r) => r.ksaCode));
+}
