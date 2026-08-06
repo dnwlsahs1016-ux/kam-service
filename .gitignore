@@ -36,6 +36,16 @@ yarn-error.log*
 # vercel
 .vercel
 
+# local sqlite db (dev/pilot only, not used in prod)
+*.db
+*.db-shm
+*.db-wal
+
+# python ingestion venv
+ingestion/.venv/
+ingestion/__pycache__/
+ingestion/.cache/
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts
