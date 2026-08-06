@@ -28,10 +28,7 @@ export default async function Home() {
         <h2 className="mt-10 text-sm font-medium text-zinc-500 dark:text-zinc-400">
           혹은 아래 업종에서 직접 확인
         </h2>
-        <div
-          className="mt-3 grid gap-px overflow-hidden rounded-lg border border-zinc-200 bg-zinc-200 dark:border-zinc-800 dark:bg-zinc-800"
-          style={{ gridTemplateColumns: `repeat(${Math.max(groups.length, 1)}, minmax(0, 1fr))` }}
-        >
+        <div className="mt-3 grid grid-cols-2 gap-px overflow-hidden rounded-lg border border-zinc-200 bg-zinc-200 dark:border-zinc-800 dark:bg-zinc-800 sm:grid-cols-5">
           {groups.map((group) => (
             <div key={group.major} className="flex flex-col bg-white dark:bg-zinc-950">
               <div className="border-b border-accent/20 bg-accent-soft px-3 py-2 text-center text-sm font-semibold text-foreground">
