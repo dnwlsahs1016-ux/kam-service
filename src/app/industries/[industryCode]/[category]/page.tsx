@@ -20,6 +20,7 @@ export default async function CategoryPage({
 
   const allCodes = cases.flatMap((c) => c.standardRefs.map((r) => r.ksaCode));
   const titleMap = await getStandardTitles(allCodes);
+  const procedureRefs = cases[0]?.procedureRefs ?? [];
 
   return (
     <div className="flex flex-1 flex-col bg-zinc-50 dark:bg-black">
@@ -32,6 +33,31 @@ export default async function CategoryPage({
           {industryName} 업종에서 실제로 보고된 사례 {cases.length}건입니다. 각 사례의 절차를 체크리스트로
           참고하고, 관련 기준서 링크에서 감사기준 원문을 확인할 수 있습니다.
         </p>
+
+        {procedureRefs.length > 0 && (
+          <div className="mt-4 rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-950">
+            <h3 className="text-xs font-medium uppercase text-zinc-500 dark:text-zinc-400">
+              표준조서 참고 실증절차 (한공회 4000 계정별 실증절차, K-IFRS용)
+            </h3>
+            <div className="mt-2 flex flex-col gap-3">
+              {procedureRefs.map((ref) => (
+                <div key={ref.sheetCode}>
+                  <div className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
+                    {ref.sheetCode}. {ref.accountName}
+                  </div>
+                  <ul className="mt-1 space-y-0.5">
+                    {ref.procedures.map((p, i) => (
+                      <li key={i} className="flex gap-2 text-sm text-zinc-600 dark:text-zinc-400">
+                        <span className="mt-0.5 text-zinc-400">·</span>
+                        <span>{p}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         <div className="mt-6 flex flex-col gap-6">
           {cases.map((c) => (

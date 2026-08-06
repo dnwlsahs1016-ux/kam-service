@@ -3,6 +3,7 @@ import { db } from "./index";
 import { companies, kamFilings, kamItems, kamRawItems, standards } from "./schema";
 import { INDUSTRY_GROUPS } from "@/lib/industryGroups";
 import { getIfrsRefsForCategory, ifrsRefFromCode, type IfrsRef } from "@/lib/ifrsStandards";
+import { getProcedureRefsForCategory } from "@/lib/auditProcedureReferences";
 
 // "기타"처럼 개별 항목 단위로 채워진 ifrs_refs_json(classify_ifrs_other.py)이 있으면 그걸 쓰고,
 // 없으면 카테고리 단위 고정 매핑으로 폴백한다.
@@ -77,6 +78,7 @@ export async function listCasesForCategory(codes: string[], category: string) {
     procedures: JSON.parse(r.proceduresJson) as string[],
     standardRefs: JSON.parse(r.standardRefsJson) as { ksaCode: string }[],
     ifrsRefs: resolveIfrsRefs(category, r.ifrsRefsJson),
+    procedureRefs: getProcedureRefsForCategory(category),
   }));
 }
 
@@ -130,6 +132,7 @@ export async function listCasesForCompany(corpCode: string) {
     procedures: JSON.parse(r.proceduresJson) as string[],
     standardRefs: JSON.parse(r.standardRefsJson) as { ksaCode: string }[],
     ifrsRefs: resolveIfrsRefs(r.category, r.ifrsRefsJson),
+    procedureRefs: getProcedureRefsForCategory(r.category),
   }));
 }
 

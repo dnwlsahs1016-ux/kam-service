@@ -100,6 +100,31 @@ export default async function CompanyPage({
                 </div>
               )}
 
+              {c.procedureRefs.length > 0 && (
+                <div className="mt-4">
+                  <h3 className="text-xs font-medium uppercase text-zinc-500 dark:text-zinc-400">
+                    표준조서 참고 실증절차 (한공회 4000, K-IFRS용)
+                  </h3>
+                  <div className="mt-2 flex flex-col gap-2">
+                    {c.procedureRefs.map((ref) => (
+                      <div key={ref.sheetCode}>
+                        <div className="text-xs font-medium text-zinc-600 dark:text-zinc-400">
+                          {ref.sheetCode}. {ref.accountName}
+                        </div>
+                        <ul className="mt-0.5 space-y-0.5">
+                          {ref.procedures.map((p, i) => (
+                            <li key={i} className="flex gap-2 text-xs text-zinc-500 dark:text-zinc-500">
+                              <span>·</span>
+                              <span>{p}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               {c.sourceUrl && (
                 <a
                   href={c.sourceUrl}
