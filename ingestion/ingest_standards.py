@@ -32,6 +32,14 @@ RUNNING_HEADER_RE = re.compile(r"^감사기준서\s+\d{3,4}\s*[‘'].*[’']\s*$
 # 일부는 같은 줄에 바로 본문이 붙어 나온다("A10. 감사를 수행하는...") - 둘 다 허용.
 # 각주는 "9 품질관리기준서1 ..." 처럼 마침표 없이 번호+공백+텍스트 형태라 이 패턴에 걸리지 않는다.
 PARA_MARKER_RE = re.compile(r"^(\d{1,3}|A\d{1,3})\.\s*(.*)$")
+# 페이지 하단 각주가 본문 문단 중간에 그대로 섞여 들어오는 문제(예: "8 문단 18 참조",
+# "(*2) 우리나라의 회계감사기준에 따라...")를 걸러낸다. 각주 특유의 표현(다른 기준서/문단
+# 참조, 법규 인용, "예를 들어" 등)을 포함하는 경우만 제거 대상으로 삼아, 마침표 없는 숫자로
+# 시작하는 실제 본문 줄(드묾)까지 지워버리는 오탐을 피한다.
+FOOTNOTE_LINE_RE = re.compile(
+    r"^\(?\*?\d{1,3}\)?\s+.*(감사기준서|품질관리기준서|문단\s*\d|참조|기준서\d|"
+    r"외부감사법|IESBA|각주|예를\s*들어|말한다\s*$|해당된다\s*$|것이다\s*$)"
+)
 
 
 def parse_toc(doc: fitz.Document) -> list[dict]:
@@ -59,7 +67,24 @@ def parse_toc(doc: fitz.Document) -> list[dict]:
     return entries
 
 
-def extract_paragraphs(doc: fitz.Document, code: str, title: str, start_page: int, end_page: int):
+def build_glued_footnote_re(known_codes: list[str]) -> re.Pattern:
+    # "감사기준서 22010" / "감사기준서 200 1" 처럼, 다른 기준서를 인용하는 자리에 각주번호가
+    # 공백 없이(또는 공백 하나만 두고) 그대로 붙어버리는 경우를 걸러낸다. 알고 있는 실제
+    # 기준서 번호 뒤에 오는 잉여 숫자만 지우므로, 임의의 숫자를 잘못 지울 위험이 없다.
+    # 뒤에 오는 문자가 한글이면(예: "22010에") 파이썬 정규식의 \b는 숫자<->한글 사이를
+    # 경계로 보지 않아 매칭에 실패한다. 그래서 \b 대신 "숫자가 더 이어지지 않음"만 확인한다.
+    codes_alt = "|".join(sorted(known_codes, key=len, reverse=True))
+    return re.compile(rf"((?:감사기준서|품질관리기준서)\s*(?:{codes_alt}))\s?\d{{1,2}}(?!\d)")
+
+
+def extract_paragraphs(
+    doc: fitz.Document,
+    code: str,
+    title: str,
+    start_page: int,
+    end_page: int,
+    glued_footnote_re: re.Pattern,
+):
     paragraphs = []
     current_no = None
     current_type = None
@@ -75,6 +100,7 @@ def extract_paragraphs(doc: fitz.Document, code: str, title: str, start_page: in
     def flush():
         if current_no is not None and buf:
             text = " ".join(s.strip() for s in buf if s.strip())
+            text = glued_footnote_re.sub(r"\1", text)
             text = re.sub(r"\s+", " ", text).strip()
             if text:
                 paragraphs.append(
@@ -98,6 +124,8 @@ def extract_paragraphs(doc: fitz.Document, code: str, title: str, start_page: in
             if not line:
                 continue
             if PAGE_COUNTER_RE.match(line) or RUNNING_HEADER_RE.match(line):
+                continue
+            if FOOTNOTE_LINE_RE.match(line):
                 continue
             marker = PARA_MARKER_RE.match(line)
             if marker:
@@ -138,11 +166,15 @@ def main():
     for e in toc:
         print(f"  {e['code']:>5}  p{e['start_page']:>4}-{e['end_page']:<4}  {e['title']}")
 
+    glued_footnote_re = build_glued_footnote_re([e["code"] for e in toc])
+
     conn = sqlite3.connect(DB_PATH)
     conn.execute("DELETE FROM standards")
     total = 0
     for e in toc:
-        paras = extract_paragraphs(doc, e["code"], e["title"], e["start_page"], e["end_page"])
+        paras = extract_paragraphs(
+            doc, e["code"], e["title"], e["start_page"], e["end_page"], glued_footnote_re
+        )
         for p in paras:
             conn.execute(
                 """INSERT INTO standards (ksa_code, ksa_title, para_no, para_type, page_no, content)
