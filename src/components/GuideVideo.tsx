@@ -13,23 +13,25 @@ export function GuideVideo({
 }) {
   const ref = useRef<HTMLVideoElement>(null);
 
+  function reset() {
+    const v = ref.current;
+    if (!v) return;
+    v.pause();
+    v.currentTime = 0;
+  }
+
   return (
     <video
       ref={ref}
       src={src}
       poster={poster}
-      loop
       muted
       playsInline
-      preload="none"
+      preload="auto"
       className={className}
       onMouseEnter={() => ref.current?.play()}
-      onMouseLeave={() => {
-        const v = ref.current;
-        if (!v) return;
-        v.pause();
-        v.currentTime = 0;
-      }}
+      onMouseLeave={reset}
+      onEnded={reset}
     />
   );
 }
