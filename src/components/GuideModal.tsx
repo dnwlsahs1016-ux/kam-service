@@ -24,11 +24,11 @@ const GUIDES = [
     label: "업종에서 찾기",
     src: "/guide/guide-tour-industry.mp4",
     poster: "/guide/guide-tour-industry-poster.png",
-    stepBoundaries: [0, 3.389, 5.775],
+    stepBoundaries: [0, 3.304, 5.619],
     steps: [
       { title: "1. 업종 선택", desc: "관심 있는 업종을 선택하세요." },
       { title: "2. 카테고리 선택", desc: "업종 내 주요 KAM 카테고리를 선택하세요." },
-      { title: "3. 회계기준서 이동", desc: "관련 회계기준서를 클릭하면 원문으로 바로 이동합니다." },
+      { title: "3. 기준서 이동", desc: "관련 기준서를 클릭하면 원문으로 바로 이동합니다." },
     ],
   },
 ];
@@ -166,7 +166,7 @@ export function GuideModal() {
                   <div
                     key={g.key}
                     className="absolute inset-0"
-                    style={{ visibility: active ? "visible" : "hidden" }}
+                    style={{ display: active ? "block" : "none" }}
                   >
                     <img
                       src={g.poster}

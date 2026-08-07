@@ -130,10 +130,11 @@ await categoryLink.click();
 await page.waitForSelector("article");
 await page.waitForTimeout(600);
 
-// ── 3. 기준서 이동 (회계기준서(K-IFRS) 칩 클릭 - 기업으로 찾기 가이드가 이미 감사기준서
-// 클릭을 보여주므로, 여기서는 다른 종류의 기준서로 다양성을 준다) ────────────────
+// ── 3. 기준서 이동 (감사기준서 칩 클릭 - 회계기준서(K-IFRS)는 외부 사이트로 새 탭이 열려서
+// "이동 후 화면"을 자연스럽게 이어붙일 수 없다. 내부 페이지로 이동하는 걸 보여주는 완성도가
+// 다양성보다 중요해서, 기업으로 찾기 가이드와 같은 방식으로 되돌린다) ────────────────
 const t2 = elapsed();
-const chip = page.locator('a[href*="samili.com"]').first();
+const chip = page.locator('a[href^="/standards/"]').first();
 await chip.waitFor();
 const chipBoxBeforeScroll = await chip.boundingBox();
 const targetY = SIZE.height - chipBoxBeforeScroll.height - 40;
@@ -152,15 +153,14 @@ await moveMouseSmooth(page, cx, cy, { steps: 14 });
 await ringHighlight(page, chipBox);
 await page.waitForTimeout(700);
 
-// 회계기준서 링크는 새 탭(target="_blank")으로 열린다 - 그 탭은 별도 영상으로 녹화되어
-// 이어붙일 수 없으므로, 클릭 -> 새 탭이 뜨는 것만 확인하고 바로 닫아서 원래 탭(메인 녹화)에
-// 계속 머문다.
-const [popup] = await Promise.all([context.waitForEvent("page"), chip.click()]);
-await popup.waitForLoadState("domcontentloaded").catch(() => {});
-await page.waitForTimeout(500);
-await popup.close();
-await page.waitForTimeout(300);
+await chip.click();
+await page.waitForSelector("main");
 await page.evaluate(() => document.getElementById("__ring_highlight__")?.remove());
+await page.waitForTimeout(400);
+for (let i = 0; i < 5; i++) {
+  await page.mouse.wheel(0, 50);
+  await page.waitForTimeout(180);
+}
 await page.waitForTimeout(800);
 
 await context.close();
