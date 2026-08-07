@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getStandardTitles, listCasesForCategory } from "@/db/queries";
+import { dartMainReportUrl } from "@/lib/dart";
 import { findMinorByCodesParam } from "@/lib/industryGroups";
 import { classifyOther } from "@/lib/otherSubcategories";
 
@@ -222,14 +223,29 @@ export default async function CategoryPage({
                           )}
 
                           {c.sourceUrl && (
-                            <a
-                              href={c.sourceUrl}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="mt-4 inline-block text-xs text-zinc-400 hover:underline"
-                            >
-                              DART 원문 보기 →
-                            </a>
+                            <div className="mt-4">
+                              <h3 className="text-xs font-medium uppercase text-zinc-500 dark:text-zinc-400">
+                                DART 원문 보기
+                              </h3>
+                              <div className="mt-2 flex flex-wrap gap-2">
+                                <a
+                                  href={dartMainReportUrl(c.sourceUrl)}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="rounded-full border border-zinc-300 bg-zinc-100 px-3 py-1 text-xs text-zinc-600 hover:border-zinc-400 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-300 dark:hover:border-zinc-500"
+                                >
+                                  사업보고서
+                                </a>
+                                <a
+                                  href={c.sourceUrl}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="rounded-full border border-zinc-300 bg-zinc-100 px-3 py-1 text-xs text-zinc-600 hover:border-zinc-400 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-300 dark:hover:border-zinc-500"
+                                >
+                                  감사보고서
+                                </a>
+                              </div>
+                            </div>
                           )}
                         </article>
                       ))}
