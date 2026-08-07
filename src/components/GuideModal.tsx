@@ -81,31 +81,23 @@ export function GuideModal() {
     };
   }, [open]);
 
+  // 탭을 바꾸면 실제 재생 시작까지 걸리는 시간이 매번 들쭉날쭉하다(크롬 절전 정지와의
+  // 경합 등) - 그때그때 다른 흰 화면 대신, 무조건 0.5초는 로딩 점을 보여주고 그 사이
+  // 영상을 준비시킨 다음 재생하는 편이 더 자연스럽다.
+  const MIN_LOADING_MS = 500;
   useEffect(() => {
     setStep(0);
-    // 두 가이드 모두 모달이 열려있는 동안 계속 프리로드되고 있어서, 이미 준비된(canplaythrough
-    // 지난) 영상으로 전환할 때는 흰 화면 없이 바로 재생한다.
-    const v = videoRefs.current[guideIndex];
-    if (v && readyFlags[guideIndex]) {
-      v.currentTime = 0;
-      safePlay(v);
-    }
     // 비활성 탭 영상은 멈춰서 리소스를 아낀다.
     videoRefs.current.forEach((el, i) => {
       if (el && i !== guideIndex) el.pause();
     });
+    const v = videoRefs.current[guideIndex];
+    if (!v) return;
+    v.currentTime = 0;
+    const timer = setTimeout(() => safePlay(v), MIN_LOADING_MS);
+    return () => clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [guideIndex]);
-
-  // onCanPlayThrough 안에서의 play() 호출이 타이밍상 씹히는 경우가 있어서(예: 이벤트
-  // 발생 시점에 아직 다른 렌더가 진행 중이던 경우), readyFlags가 바뀔 때마다 활성 탭
-  // 영상이 준비됐는데 멈춰있으면 다시 재생을 시도하는 안전망을 둔다.
-  useEffect(() => {
-    const v = videoRefs.current[guideIndex];
-    if (v && readyFlags[guideIndex] && v.paused) {
-      safePlay(v);
-    }
-  }, [guideIndex, readyFlags]);
 
   function seekToStep(i: number) {
     const v = videoRefs.current[guideIndex];
