@@ -30,12 +30,12 @@ export default async function AuditorMinorPage({
           현재 감사인인 회사 {minor.companies.length}곳입니다.
         </p>
 
-        <ul className="mt-6 grid grid-cols-2 gap-px overflow-hidden rounded-lg border border-zinc-200 bg-zinc-200 dark:border-zinc-800 dark:bg-zinc-800 sm:grid-cols-3">
+        <ul className="mt-6 flex flex-wrap gap-3">
           {minor.companies.map((c) => (
-            <li key={c.corpCode} className="bg-white dark:bg-zinc-950">
+            <li key={c.corpCode} className="w-[calc(50%-0.375rem)] sm:w-[calc(33.333%-0.5rem)]">
               <Link
                 href={`/companies/${c.corpCode}`}
-                className="flex flex-col px-3 py-3 hover:bg-accent-soft dark:hover:bg-zinc-900"
+                className="flex h-full flex-col rounded-lg border border-zinc-200 bg-white px-3 py-3 hover:border-accent/40 hover:bg-accent-soft dark:border-zinc-800 dark:bg-zinc-950 dark:hover:bg-zinc-900"
               >
                 <span className="text-sm font-medium">{c.corpName}</span>
                 <span className="mt-0.5 text-xs text-zinc-500 dark:text-zinc-400">{c.adtorName}</span>

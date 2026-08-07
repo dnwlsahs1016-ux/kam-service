@@ -7,6 +7,7 @@
 실행: python ingestion/ingest_auditors.py
 """
 
+import re
 import sqlite3
 import sys
 import time
@@ -27,6 +28,47 @@ def categorize(adtor_name: str) -> str:
         if key in adtor_name:
             return key
     return "기타"
+
+
+_TR_RE = re.compile(r"<TR[^>]*>(.*?)</TR>", re.S)
+_TD_RE = re.compile(r"<TD[^>]*>(.*?)</TD>", re.S)
+_TAG_RE = re.compile(r"<[^>]+>")
+_CURRENT_PERIOD_RE = re.compile(r"\((당기|당분기|당반기)\)")
+
+
+def extract_auditor_from_document(xml_text: str) -> str | None:
+    """구조화 API(accnutAdtorNmNdAdtOpinion)가 adtor='-'를 반환하는 회사가 있다 - 실제
+    원문(사업/분기보고서 본문 XML)에는 "가. 회계감사인의 명칭 및 감사의견" 표에 값이 채워져
+    있는데, DART가 그 표를 구조화 데이터로 뽑아내는 과정에서 값을 놓친 케이스로 보인다
+    (사용자가 DART 뷰어 화면에서 LX세미콘 사례로 직접 확인). 원문 표를 직접 파싱해서
+    "(당기)"/"(당분기)" 행의 "감사보고서"/"연결감사보고서" 구분 셀 바로 다음 칸(감사인
+    칸)을 읽는 방식으로 보정한다. 표 자체가 비어있는 회사(진짜 데이터 공백)는 이 방식으로도
+    복구되지 않는다 - 그 경우는 None을 반환해 정상적으로 걸러지게 둔다.
+    """
+    idx = xml_text.find("회계감사인의 명칭")
+    if idx == -1:
+        return None
+    window = xml_text[idx : idx + 10000]
+    tbody_idx = window.find("<TBODY")
+    body = window[tbody_idx:] if tbody_idx != -1 else window
+
+    current_block = False
+    for row_html in _TR_RE.findall(body):
+        tds = [_TAG_RE.sub("", t).strip() for t in _TD_RE.findall(row_html)]
+        if not tds:
+            continue
+        if any(_CURRENT_PERIOD_RE.search(t) for t in tds):
+            current_block = True
+        elif tds[0] not in ("감사보고서", "연결감사보고서"):
+            current_block = False
+        if not current_block:
+            continue
+        for i, t in enumerate(tds):
+            if t in ("감사보고서", "연결감사보고서") and i + 1 < len(tds):
+                candidate = tds[i + 1]
+                if candidate and candidate != "-":
+                    return candidate
+    return None
 
 
 def main():
@@ -57,7 +99,7 @@ def main():
     ]
     print(f"대상 {len(corp_codes)}개 회사")
 
-    ok, no_data, errors = 0, 0, 0
+    ok, no_data, errors, recovered_count = 0, 0, 0, 0
     for i, corp_code in enumerate(corp_codes, 1):
         try:
             data = dc.get_auditor_opinion(corp_code, BSNS_YEAR, REPRT_CODE)
@@ -74,10 +116,24 @@ def main():
 
         item = data["list"][0]
         adtor = (item.get("adtor") or "").strip()
+        recovered = False
         if not adtor or adtor == "-":
-            no_data += 1
-            time.sleep(0.15)
-            continue
+            rcept_no = item.get("rcept_no")
+            fallback = None
+            if rcept_no:
+                try:
+                    zip_bytes = dc.get_document_zip(rcept_no)
+                    files = dc.unzip_first_xml_bytes(zip_bytes)
+                    xml_text = list(files.values())[0].decode("utf-8", errors="replace")
+                    fallback = extract_auditor_from_document(xml_text)
+                except Exception:
+                    fallback = None
+            if not fallback:
+                no_data += 1
+                time.sleep(0.15)
+                continue
+            adtor = fallback
+            recovered = True
 
         category = categorize(adtor)
         conn.execute(
@@ -89,13 +145,16 @@ def main():
             (corp_code, BSNS_YEAR, REPRT_CODE, adtor, category),
         )
         ok += 1
+        if recovered:
+            recovered_count += 1
+            print(f"  [원문 보정] {corp_code}: {adtor}")
         if i % 50 == 0:
             conn.commit()
             print(f"[{i}/{len(corp_codes)}] 진행 중... (성공 {ok}, 데이터없음 {no_data}, 에러 {errors})")
         time.sleep(0.15)
 
     conn.commit()
-    print(f"완료: 성공 {ok}, 데이터없음 {no_data}, 에러 {errors}")
+    print(f"완료: 성공 {ok}(원문 보정 {recovered_count}건 포함), 데이터없음 {no_data}, 에러 {errors}")
 
     print("\n분류별 집계:")
     for row in conn.execute(
