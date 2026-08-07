@@ -98,30 +98,45 @@ export default async function CompanyPage({
                 </div>
               )}
 
-              {(c.standardRefs.length > 0 || c.ifrsRefs.length > 0) && (
-                <div className="mt-4 flex flex-wrap gap-2">
-                  {c.standardRefs.map((ref) => (
-                    <Link
-                      key={ref.ksaCode}
-                      href={`/standards/${ref.ksaCode}`}
-                      className="rounded-full border border-accent/30 bg-accent-soft px-3 py-1 text-xs text-accent hover:border-accent/60"
-                    >
-                      감사기준서 {ref.ksaCode}
-                      {titleMap.get(ref.ksaCode) ? ` · ${titleMap.get(ref.ksaCode)}` : ""}
-                    </Link>
-                  ))}
-                  {c.ifrsRefs.map((ref) => (
-                    <a
-                      key={ref.code}
-                      href={ref.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="rounded-full border border-zinc-300 bg-zinc-100 px-3 py-1 text-xs text-zinc-600 hover:border-zinc-400 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-300 dark:hover:border-zinc-500"
-                      title="삼일아이닷컴에서 원문 보기 (한국회계기준원 저작권 이용 승인)"
-                    >
-                      {ref.code} · {ref.title}
-                    </a>
-                  ))}
+              {c.standardRefs.length > 0 && (
+                <div className="mt-4">
+                  <h3 className="text-xs font-medium uppercase text-zinc-500 dark:text-zinc-400">
+                    관련 감사기준서
+                  </h3>
+                  <div className="mt-2 flex flex-wrap gap-2">
+                    {c.standardRefs.map((ref) => (
+                      <Link
+                        key={ref.ksaCode}
+                        href={`/standards/${ref.ksaCode}`}
+                        className="rounded-full border border-accent/30 bg-accent-soft px-3 py-1 text-xs text-accent hover:border-accent/60"
+                      >
+                        감사기준서 {ref.ksaCode}
+                        {titleMap.get(ref.ksaCode) ? ` · ${titleMap.get(ref.ksaCode)}` : ""}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {c.ifrsRefs.length > 0 && (
+                <div className="mt-4">
+                  <h3 className="text-xs font-medium uppercase text-zinc-500 dark:text-zinc-400">
+                    관련 회계기준서
+                  </h3>
+                  <div className="mt-2 flex flex-wrap gap-2">
+                    {c.ifrsRefs.map((ref) => (
+                      <a
+                        key={ref.code}
+                        href={ref.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="rounded-full border border-zinc-300 bg-zinc-100 px-3 py-1 text-xs text-zinc-600 hover:border-zinc-400 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-300 dark:hover:border-zinc-500"
+                        title="삼일아이닷컴에서 원문 보기 (한국회계기준원 저작권 이용 승인)"
+                      >
+                        {ref.code} · {ref.title}
+                      </a>
+                    ))}
+                  </div>
                 </div>
               )}
 
