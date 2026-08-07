@@ -10,7 +10,9 @@ import { fileURLToPath } from "node:url";
 
 const outDir = path.join(path.dirname(fileURLToPath(import.meta.url)), "..", "public", "guide");
 const base = "http://localhost:3000";
-const SIZE = { width: 620, height: 320 };
+// 31:16 비율 유지하면서 Tailwind sm(640px) 브레이크포인트를 넘겨야 한다 - 그보다 좁으면
+// 홈 화면의 이용가이드/업종 그리드가 모바일용 1~2열로 쌓여서 화면이 완전히 달라 보인다.
+const SIZE = { width: 744, height: 384 };
 const ACCENT = "#d04a02"; // 사이트 accent 주황색과 맞춤
 
 const browser = await chromium.launch();
