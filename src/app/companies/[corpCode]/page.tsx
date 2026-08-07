@@ -44,7 +44,12 @@ export default async function CompanyPage({
             >
               <div className="flex items-baseline justify-between gap-4">
                 <h2 className="font-medium">{c.title}</h2>
-                <span className="shrink-0 text-sm text-zinc-500 dark:text-zinc-400">
+                <span className="shrink-0 flex items-center gap-1.5 text-sm text-zinc-500 dark:text-zinc-400">
+                  {c.reportBasis && (
+                    <span className="rounded border border-zinc-300 px-1.5 py-0.5 text-[11px] font-medium text-zinc-500 dark:border-zinc-700 dark:text-zinc-400">
+                      {c.reportBasis}기준
+                    </span>
+                  )}
                   FY{c.fiscalYear}
                 </span>
               </div>

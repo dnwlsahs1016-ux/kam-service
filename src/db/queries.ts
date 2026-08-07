@@ -66,6 +66,7 @@ export async function listCasesForCategory(codes: string[], category: string) {
       corpCode: companies.corpCode,
       corpName: companies.corpName,
       fiscalYear: kamFilings.fiscalYear,
+      reportBasis: kamFilings.reportBasis,
       sourceUrl: kamFilings.sourceUrl,
     })
     .from(kamItems)
@@ -121,6 +122,7 @@ export async function listCasesForCompany(corpCode: string) {
       standardRefsJson: kamItems.standardRefsJson,
       ifrsRefsJson: kamItems.ifrsRefsJson,
       fiscalYear: kamFilings.fiscalYear,
+      reportBasis: kamFilings.reportBasis,
       sourceUrl: kamFilings.sourceUrl,
     })
     .from(kamItems)

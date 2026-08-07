@@ -36,6 +36,7 @@ export const kamFilings = sqliteTable(
     rceptNo: text("rcept_no").notNull(), // DART 접수번호
     filedDate: text("filed_date"), // YYYYMMDD
     sourceUrl: text("source_url"),
+    reportBasis: text("report_basis", { enum: ["연결", "별도"] }), // 감사보고서가 연결/별도 재무제표 기준인지 (raw_text 키워드로 백필, null이면 미확인)
   },
   (t) => [
     uniqueIndex("kam_filings_rcept_idx").on(t.rceptNo),
