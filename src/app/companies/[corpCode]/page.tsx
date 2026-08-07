@@ -135,7 +135,7 @@ export default async function CompanyPage({
                       href={dartMainReportUrl(c.sourceUrl)}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="rounded-full border border-zinc-300 bg-zinc-100 px-3 py-1 text-xs text-zinc-600 hover:border-zinc-400 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-300 dark:hover:border-zinc-500"
+                      className="rounded-full border border-zinc-300 px-3 py-1 text-xs text-zinc-600 hover:border-zinc-400 hover:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-300 dark:hover:border-zinc-500 dark:hover:bg-zinc-900"
                     >
                       사업보고서
                     </a>
@@ -143,7 +143,7 @@ export default async function CompanyPage({
                       href={c.sourceUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="rounded-full border border-zinc-300 bg-zinc-100 px-3 py-1 text-xs text-zinc-600 hover:border-zinc-400 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-300 dark:hover:border-zinc-500"
+                      className="rounded-full border border-zinc-300 px-3 py-1 text-xs text-zinc-600 hover:border-zinc-400 hover:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-300 dark:hover:border-zinc-500 dark:hover:bg-zinc-900"
                     >
                       감사보고서
                     </a>
