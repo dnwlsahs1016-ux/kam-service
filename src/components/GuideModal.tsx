@@ -2,17 +2,16 @@
 
 import { useEffect, useRef, useState } from "react";
 
-// 각 가이드는 하나의 이어지는 영상이다(회사 검색 흐름 / 업종 탐색 흐름). 단계 사이에
-// 화면이 끊기지 않도록, 클립을 따로 녹화하는 대신 실제 조작을 처음부터 끝까지 한 번에
-// 녹화하고, 그중 몇 초 지점부터가 몇 번째 "단계"인지만 stepBoundaries로 표시한다.
-// currentTime이 그 경계를 넘어가면 표시되는 단계 번호/설명만 갈아끼운다.
+// 각 가이드는 하나의 이어지는 영상이다(회사 검색 흐름 / 업종 탐색 흐름 / 회계법인 탐색
+// 흐름). 단계 사이에 화면이 끊기지 않도록, 클립을 따로 녹화하는 대신 실제 조작을 처음부터
+// 끝까지 한 번에 녹화하고, 그중 몇 초 지점부터가 몇 번째 "단계"인지만 stepBoundaries로
+// 표시한다. currentTime이 그 경계를 넘어가면 표시되는 단계 번호/설명만 갈아끼운다.
 const GUIDES = [
   {
     key: "company",
     label: "기업으로 찾기",
     src: "/guide/guide-tour.mp4",
-    poster: "/guide/guide-tour-poster.png",
-    stepBoundaries: [0, 5.546, 8.338],
+    stepBoundaries: [0, 7.036, 10.998],
     steps: [
       { title: "1. 검색", desc: "기업 이름으로 검색하세요." },
       { title: "2. 확인", desc: "그 회사의 KAM 사례와 감사절차 체크리스트를 확인하세요." },
@@ -23,12 +22,22 @@ const GUIDES = [
     key: "industry",
     label: "업종에서 찾기",
     src: "/guide/guide-tour-industry.mp4",
-    poster: "/guide/guide-tour-industry-poster.png",
-    stepBoundaries: [0, 3.304, 5.619],
+    stepBoundaries: [0, 6.92, 9.993],
     steps: [
-      { title: "1. 업종 선택", desc: "관심 있는 업종을 선택하세요." },
+      { title: "1. 업종 선택", desc: "홈에서 업종별로 확인하러 가기를 눌러 관심 있는 업종을 선택하세요." },
       { title: "2. 카테고리 선택", desc: "업종 내 주요 KAM 카테고리를 선택하세요." },
       { title: "3. 기준서 이동", desc: "관련 기준서를 클릭하면 원문으로 바로 이동합니다." },
+    ],
+  },
+  {
+    key: "auditors",
+    label: "회계법인으로 찾기",
+    src: "/guide/guide-tour-auditors.mp4",
+    stepBoundaries: [0, 5.582, 8.529],
+    steps: [
+      { title: "1. 회계법인 선택", desc: "홈에서 회계법인으로 찾기를 눌러 관심 있는 회계법인을 선택하세요." },
+      { title: "2. 업종 선택", desc: "그 법인이 감사인인 회사를 업종별로 확인하세요." },
+      { title: "3. 회사 확인", desc: "회사를 클릭하면 KAM 사례와 감사절차 체크리스트로 이동합니다." },
     ],
   },
 ];

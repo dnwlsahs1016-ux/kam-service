@@ -46,7 +46,7 @@ const CURSOR_INIT_SCRIPT = () => {
   });
 };
 
-async function moveMouseSmooth(page, toX, toY, { steps = 20, stepDelay = 16, from } = {}) {
+async function moveMouseSmooth(page, toX, toY, { steps = 20, stepDelay = 24, from } = {}) {
   const start = from ?? (await page.evaluate(() => window.__lastMouse__ ?? { x: 0, y: 0 }));
   for (let i = 1; i <= steps; i++) {
     const x = start.x + ((toX - start.x) * i) / steps;
@@ -108,26 +108,26 @@ await page.goto(base);
 const input = page.locator('input[name="q"]');
 await input.waitFor();
 await input.evaluate((el) => el.scrollIntoView({ block: "center" }));
-await page.waitForTimeout(300);
+await page.waitForTimeout(435);
 
 const inputBox = await input.boundingBox();
 await moveMouseSmooth(page, inputBox.x + inputBox.width / 2, inputBox.y + inputBox.height / 2, {
   from: { x: 20, y: 20 },
   steps: 25,
 });
-await page.waitForTimeout(150);
+await page.waitForTimeout(218);
 await page.click('input[name="q"]');
-await page.waitForTimeout(300);
-await page.type('input[name="q"]', "삼성전자", { delay: 150 });
+await page.waitForTimeout(435);
+await page.type('input[name="q"]', "삼성전자", { delay: 190 });
 await page.waitForSelector("#company-search-listbox li:nth-child(1)");
-await page.waitForTimeout(500);
+await page.waitForTimeout(725);
 const firstResult = page.locator("#company-search-listbox li").first();
 const resultBox = await firstResult.boundingBox();
 await moveMouseSmooth(page, resultBox.x + resultBox.width / 2, resultBox.y + resultBox.height / 2, { steps: 18 });
-await page.waitForTimeout(400);
+await page.waitForTimeout(580);
 await firstResult.click();
 await page.waitForSelector("h1");
-await page.waitForTimeout(600);
+await page.waitForTimeout(870);
 
 // ── 2. 확인 (같은 회사 페이지에서 이어서 스크롤) ──────────────
 const t1 = elapsed();
@@ -140,9 +140,9 @@ const scrollPx = Math.max(0, Math.round(chipBoxBeforeScroll.y - targetY));
 const ticks = 16;
 for (let i = 0; i < ticks; i++) {
   await page.mouse.wheel(0, scrollPx / ticks);
-  await page.waitForTimeout(140);
+  await page.waitForTimeout(203);
 }
-await page.waitForTimeout(400);
+await page.waitForTimeout(580);
 
 // ── 3. 기준서 이동 (같은 칩을 그대로 클릭) ──────────────────
 const t2 = elapsed();
@@ -151,17 +151,17 @@ const cx = chipBox.x + chipBox.width / 2;
 const cy = chipBox.y + chipBox.height / 2;
 await moveMouseSmooth(page, cx, cy, { steps: 14 });
 await ringHighlight(page, chipBox);
-await page.waitForTimeout(700);
+await page.waitForTimeout(1015);
 
 await chip.click();
 await page.waitForSelector("main");
 await page.evaluate(() => document.getElementById("__ring_highlight__")?.remove());
-await page.waitForTimeout(400);
+await page.waitForTimeout(580);
 for (let i = 0; i < 5; i++) {
   await page.mouse.wheel(0, 50);
-  await page.waitForTimeout(180);
+  await page.waitForTimeout(261);
 }
-await page.waitForTimeout(800);
+await page.waitForTimeout(1160);
 
 await context.close();
 const [file] = fs.readdirSync(tmpDir);

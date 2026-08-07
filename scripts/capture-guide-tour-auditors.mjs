@@ -1,5 +1,5 @@
-// "업종에서 찾기" 가이드: 업종 타일 클릭 -> 카테고리 선택 -> 기준서 칩 클릭까지 하나의
-// 이어지는 영상으로 녹화한다(capture-guide-tour.mjs의 "기업으로 찾기" 버전과 같은 방식).
+// "회계법인으로 찾기" 가이드: 회계법인 선택 -> 업종 선택 -> 회사 확인까지 하나의 이어지는
+// 영상으로 녹화한다(capture-guide-tour.mjs/-industry.mjs와 같은 방식).
 // 실행 전 로컬 dev 서버(localhost:3000)가 떠 있어야 한다.
 import { chromium } from "playwright";
 import fs from "node:fs";
@@ -10,7 +10,8 @@ const outDir = path.join(path.dirname(fileURLToPath(import.meta.url)), "..", "pu
 const base = "http://localhost:3000";
 const SIZE = { width: 1860, height: 960 };
 const ACCENT = "#d04a02";
-const INDUSTRY_HREF = "/industries/2612,264"; // 반도체
+const AUDITOR_CATEGORY = "삼일"; // PwC
+const AUDITOR_MINOR = "은행";
 
 const browser = await chromium.launch();
 
@@ -77,20 +78,21 @@ async function ringHighlight(page, box, color = ACCENT) {
   );
 }
 
+// 워밍업 (컴파일 대기가 녹화 중 흰 화면으로 찍히지 않도록)
 {
   const warmupPage = await browser.newPage();
   for (const url of [
     base,
-    `${base}/industries`,
-    `${base}${INDUSTRY_HREF}`,
-    `${base}/industries/212/%EC%98%81%EC%97%85%EA%B6%8C%20%EC%86%90%EC%83%81`,
+    `${base}/auditors`,
+    `${base}/auditors/${encodeURIComponent(AUDITOR_CATEGORY)}`,
+    `${base}/auditors/${encodeURIComponent(AUDITOR_CATEGORY)}/${encodeURIComponent(AUDITOR_MINOR)}`,
   ]) {
     await warmupPage.goto(url, { waitUntil: "networkidle" });
   }
   await warmupPage.close();
 }
 
-const tmpDir = path.join(outDir, "_tmp_tour_industry");
+const tmpDir = path.join(outDir, "_tmp_tour_auditors");
 fs.mkdirSync(tmpDir, { recursive: true });
 const context = await browser.newContext({ viewport: SIZE, recordVideo: { dir: tmpDir, size: SIZE } });
 await context.addInitScript(CURSOR_INIT_SCRIPT);
@@ -103,73 +105,58 @@ const page = await context.newPage();
 const t0 = Date.now();
 const elapsed = () => (Date.now() - t0) / 1000;
 
-// ── 1. 업종 선택 (홈 -> "업종별로 확인하러 가기" 버튼 -> /industries -> 반도체 타일) ──
-// 업종 그리드가 홈 화면에서 /industries 페이지로 옮겨져서(2026-08-08 홈 개편), 먼저 홈의
-// 진입 버튼을 눌러 들어가는 장면부터 이어서 녹화한다.
+// ── 1. 회계법인 선택 (홈 -> "회계법인으로 찾기" 버튼 -> /auditors -> 삼정) ──────────
 await page.goto(base);
-const industriesEntryLink = page.locator('a[href="/industries"]').first();
-await industriesEntryLink.waitFor();
-await industriesEntryLink.evaluate((el) => el.scrollIntoView({ block: "center" }));
+const auditorsEntryLink = page.locator('a[href="/auditors"]').first();
+await auditorsEntryLink.waitFor();
+await auditorsEntryLink.evaluate((el) => el.scrollIntoView({ block: "center" }));
 await page.waitForTimeout(435);
-const entryBox = await industriesEntryLink.boundingBox();
+const entryBox = await auditorsEntryLink.boundingBox();
 await moveMouseSmooth(page, entryBox.x + entryBox.width / 2, entryBox.y + entryBox.height / 2, {
   from: { x: 20, y: 20 },
   steps: 20,
 });
 await page.waitForTimeout(580);
-await industriesEntryLink.click();
-await page.waitForSelector(`a[href="${INDUSTRY_HREF}"]`);
+await auditorsEntryLink.click();
+await page.waitForSelector("main a");
 await page.waitForTimeout(725);
 
-const industryLink = page.locator(`a[href="${INDUSTRY_HREF}"]`).first();
-await industryLink.evaluate((el) => el.scrollIntoView({ block: "center" }));
+const firmLink = page.locator("main a", { hasText: AUDITOR_CATEGORY }).first();
+await firmLink.evaluate((el) => el.scrollIntoView({ block: "center" }));
 await page.waitForTimeout(435);
-const industryBox = await industryLink.boundingBox();
-await moveMouseSmooth(page, industryBox.x + industryBox.width / 2, industryBox.y + industryBox.height / 2, {
-  steps: 18,
-});
-await page.waitForTimeout(580);
-await industryLink.click();
-await page.waitForSelector("main ul li a");
+const firmBox = await firmLink.boundingBox();
+await moveMouseSmooth(page, firmBox.x + firmBox.width / 2, firmBox.y + firmBox.height / 2, { steps: 18 });
+await page.waitForTimeout(725);
+await firmLink.click();
+await page.waitForSelector("main a");
 await page.waitForTimeout(870);
 
-// ── 2. 카테고리 선택 (건수 1위 카테고리) ──────────────────────
+// ── 2. 업종 선택 ──────────────────────────────────────────
 const t1 = elapsed();
-const categoryLink = page.locator("main ul li a").first();
-const categoryBox = await categoryLink.boundingBox();
-await moveMouseSmooth(page, categoryBox.x + categoryBox.width / 2, categoryBox.y + categoryBox.height / 2, {
-  steps: 18,
-});
+const minorLink = page.locator("main a", { hasText: AUDITOR_MINOR }).first();
+await minorLink.evaluate((el) => el.scrollIntoView({ block: "center" }));
+await page.waitForTimeout(435);
+const minorBox = await minorLink.boundingBox();
+await moveMouseSmooth(page, minorBox.x + minorBox.width / 2, minorBox.y + minorBox.height / 2, { steps: 18 });
 await page.waitForTimeout(725);
-await categoryLink.click();
-await page.waitForSelector("article");
+await minorLink.click();
+await page.waitForSelector('a[href^="/companies/"]');
 await page.waitForTimeout(870);
 
-// ── 3. 기준서 이동 (감사기준서 칩 클릭 - 회계기준서(K-IFRS)는 외부 사이트로 새 탭이 열려서
-// "이동 후 화면"을 자연스럽게 이어붙일 수 없다. 내부 페이지로 이동하는 걸 보여주는 완성도가
-// 다양성보다 중요해서, 기업으로 찾기 가이드와 같은 방식으로 되돌린다) ────────────────
+// ── 3. 회사 확인 (KAM 상세 페이지로 이동) ──────────────────────
 const t2 = elapsed();
-const chip = page.locator('a[href^="/standards/"]').first();
-await chip.waitFor();
-const chipBoxBeforeScroll = await chip.boundingBox();
-const targetY = SIZE.height - chipBoxBeforeScroll.height - 40;
-const scrollPx = Math.max(0, Math.round(chipBoxBeforeScroll.y - targetY));
-const ticks = 16;
-for (let i = 0; i < ticks; i++) {
-  await page.mouse.wheel(0, scrollPx / ticks);
-  await page.waitForTimeout(203);
-}
+const companyLink = page.locator('a[href^="/companies/"]').first();
+await companyLink.evaluate((el) => el.scrollIntoView({ block: "center" }));
 await page.waitForTimeout(435);
-
-const chipBox = await chip.boundingBox();
-const cx = chipBox.x + chipBox.width / 2;
-const cy = chipBox.y + chipBox.height / 2;
-await moveMouseSmooth(page, cx, cy, { steps: 14 });
-await ringHighlight(page, chipBox);
+const companyBox = await companyLink.boundingBox();
+await moveMouseSmooth(page, companyBox.x + companyBox.width / 2, companyBox.y + companyBox.height / 2, {
+  steps: 14,
+});
+await ringHighlight(page, companyBox);
 await page.waitForTimeout(1015);
 
-await chip.click();
-await page.waitForSelector("main");
+await companyLink.click();
+await page.waitForSelector("h1");
 await page.evaluate(() => document.getElementById("__ring_highlight__")?.remove());
 await page.waitForTimeout(580);
 for (let i = 0; i < 5; i++) {
@@ -179,22 +166,19 @@ for (let i = 0; i < 5; i++) {
 await page.waitForTimeout(1160);
 
 await context.close();
-// recordVideo는 컨텍스트 안에서 열린 모든 페이지를 각각 녹화한다 - 회계기준서 링크가 새 탭
-// (팝업)으로 열리면서 짧은 팝업용 영상 파일도 함께 생겼다. 메인 녹화(가장 긴/큰 파일)만
-// 골라 쓴다.
 const files = fs.readdirSync(tmpDir).map((f) => ({
   name: f,
   size: fs.statSync(path.join(tmpDir, f)).size,
 }));
 const file = files.sort((a, b) => b.size - a.size)[0].name;
-fs.renameSync(path.join(tmpDir, file), path.join(outDir, "guide-tour-industry.webm"));
+fs.renameSync(path.join(tmpDir, file), path.join(outDir, "guide-tour-auditors.webm"));
 fs.rmSync(tmpDir, { recursive: true, force: true });
 
 fs.writeFileSync(
-  path.join(outDir, "guide-tour-industry.json"),
+  path.join(outDir, "guide-tour-auditors.json"),
   JSON.stringify({ stepBoundaries: [0, t1, t2] }, null, 2)
 );
 console.log("stepBoundaries:", [0, t1, t2]);
 
 await browser.close();
-console.log("완료:", path.join(outDir, "guide-tour-industry.webm"));
+console.log("완료:", path.join(outDir, "guide-tour-auditors.webm"));
