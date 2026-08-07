@@ -12,7 +12,9 @@ const outDir = path.join(path.dirname(fileURLToPath(import.meta.url)), "..", "pu
 const base = "http://localhost:3000";
 const SIZE = { width: 620, height: 320 };
 const ACCENT = "#d04a02"; // 사이트 accent 주황색과 맞춤
-const CHECKLIST_SCROLL_PX = 200; // 2번(확인) 클립이 끝나는 스크롤 위치 - 3번(기준서 이동)이 이 위치에서 그대로 이어서 시작한다.
+// 2번(확인) 클립이 끝나는 스크롤 위치 - 관련 기준서 칩이 화면 하단 근처에 보이는 지점.
+// 3번(기준서 이동)이 이 위치에서 그대로 이어서 시작한다. (칩 실제 y좌표 1633px 기준 산출)
+const CHECKLIST_SCROLL_PX = 1350;
 
 const browser = await chromium.launch();
 
@@ -161,35 +163,35 @@ await recordClip("2-checklist", {
     await page.locator("article").first().waitFor();
   },
   play: async (page) => {
-    const ticks = 10;
+    const ticks = 18;
     const perTick = CHECKLIST_SCROLL_PX / ticks;
     for (let i = 0; i < ticks; i++) {
       await page.mouse.wheel(0, perTick);
-      await page.waitForTimeout(220);
+      await page.waitForTimeout(160);
     }
     await page.waitForTimeout(800);
   },
 });
 
-// 3. 기준서 이동: 2번이 끝난 스크롤 위치에서 그대로 시작 -> 커서가 칩으로 이동 -> 강조
-// 표시 -> 클릭 -> 기준서 페이지로 전환
+// 3. 기준서 이동: 2번이 끝난 스크롤 위치 + 강조 표시가 이미 된 상태로 시작(첫 프레임) ->
+// 클릭 -> 기준서 페이지로 전환 -> 스크롤
 await recordClip("3-standard", {
   url: `${base}/industries/212/%EC%98%81%EC%97%85%EA%B6%8C%20%EC%86%90%EC%83%81`,
   waitReady: async (page) => {
-    await page.locator('a[href^="/standards/"]').first().waitFor();
+    const chip = page.locator('a[href^="/standards/"]').first();
+    await chip.waitFor();
     await page.mouse.wheel(0, CHECKLIST_SCROLL_PX);
     await page.waitForTimeout(100);
+    const chipBox = await chip.boundingBox();
+    const cx = chipBox.x + chipBox.width / 2;
+    const cy = chipBox.y + chipBox.height / 2;
+    await page.mouse.move(cx, cy); // 첫 프레임부터 커서가 칩 위에 있도록 즉시 배치
+    await page.evaluate(({ x, y }) => (window.__lastMouse__ = { x, y }), { x: cx, y: cy });
+    await ringHighlight(page, chipBox);
   },
   play: async (page) => {
     const chip = page.locator('a[href^="/standards/"]').first();
-    const chipBox = await chip.boundingBox();
-    await moveMouseSmooth(page, chipBox.x + chipBox.width / 2, chipBox.y + chipBox.height / 2, {
-      from: { x: 20, y: 20 },
-      steps: 45,
-      stepDelay: 30,
-    });
-    await ringHighlight(page, chipBox);
-    await page.waitForTimeout(800);
+    await page.waitForTimeout(900);
     await chip.click();
     await page.waitForSelector("main");
     await page.waitForTimeout(500);
