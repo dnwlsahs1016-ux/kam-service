@@ -186,13 +186,14 @@ export function GuideModal() {
                       className="absolute inset-0 h-full w-full object-cover"
                       style={{ visibility: active && !isPlaying ? "visible" : "hidden" }}
                     />
-                    {active && !isPlaying && (
-                      <div className="absolute inset-0 flex items-center justify-center gap-1.5">
-                        <span className="h-2.5 w-2.5 animate-bounce rounded-full bg-accent [animation-delay:-0.3s]" />
-                        <span className="h-2.5 w-2.5 animate-bounce rounded-full bg-accent [animation-delay:-0.15s]" />
-                        <span className="h-2.5 w-2.5 animate-bounce rounded-full bg-accent" />
-                      </div>
-                    )}
+                    <div
+                      className="absolute inset-0 flex items-center justify-center gap-1.5"
+                      style={{ visibility: active && !isPlaying ? "visible" : "hidden" }}
+                    >
+                      <span className="h-2.5 w-2.5 animate-bounce rounded-full bg-accent [animation-delay:-0.3s]" />
+                      <span className="h-2.5 w-2.5 animate-bounce rounded-full bg-accent [animation-delay:-0.15s]" />
+                      <span className="h-2.5 w-2.5 animate-bounce rounded-full bg-accent" />
+                    </div>
                     <video
                       ref={refCallbacksRef.current[i]}
                       src={g.src}
