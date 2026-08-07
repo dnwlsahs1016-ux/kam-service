@@ -194,6 +194,9 @@ await recordClip("3-standard", {
     await page.waitForTimeout(900);
     await chip.click();
     await page.waitForSelector("main");
+    // Next.js는 클라이언트 사이드 이동이라 페이지가 새로고침되지 않는다 - 직접 그려 넣은
+    // 하이라이트 링이 새 페이지까지 그대로 남아있으므로 명시적으로 지워준다.
+    await page.evaluate(() => document.getElementById("__ring_highlight__")?.remove());
     await page.waitForTimeout(500);
     // 도착한 기준서 페이지도 조금 스크롤해서 내용을 보여준다.
     for (let i = 0; i < 6; i++) {
