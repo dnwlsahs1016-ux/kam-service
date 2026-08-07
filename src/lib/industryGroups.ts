@@ -48,7 +48,7 @@ export const INDUSTRY_GROUPS: IndustryMajor[] = [
   {
     major: "제조업",
     items: [
-      { label: "반도체", codes: ["2612"] },
+      { label: "반도체", codes: ["2612", "264"] },
       { label: "자동차", codes: ["30121", "303"] },
       { label: "제약·바이오", codes: ["212"] },
     ],
