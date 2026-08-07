@@ -12,6 +12,7 @@ const outDir = path.join(path.dirname(fileURLToPath(import.meta.url)), "..", "pu
 const base = "http://localhost:3000";
 const SIZE = { width: 620, height: 320 };
 const ACCENT = "#d04a02"; // 사이트 accent 주황색과 맞춤
+const CHECKLIST_SCROLL_PX = 200; // 2번(확인) 클립이 끝나는 스크롤 위치 - 3번(기준서 이동)이 이 위치에서 그대로 이어서 시작한다.
 
 const browser = await chromium.launch();
 
@@ -91,10 +92,10 @@ async function recordClip(name, fn) {
   const page = await context.newPage();
 
   // 첫 프레임: 페이지가 안정된 직후, 커서/하이라이트가 나타나기 전 상태를 그대로
-  // poster PNG로도 저장한다 - GIF 재생 시작 프레임과 완전히 동일해진다.
+  // poster PNG로도 저장한다 - GIF 재생 시작 프레임과 완전히 동일해진다. 새 탭이 열리고
+  // 페이지가 로드되기 전의 흰 화면을 늘리지 않도록 별도의 정지 구간은 넣지 않는다.
   await page.goto(fn.url);
   await fn.waitReady(page);
-  await page.waitForTimeout(500); // 녹화 초반 프레임 튐 방지용 정지 구간
   await page.screenshot({ path: path.join(outDir, `${name}.png`), clip: { x: 0, y: 0, ...SIZE } });
 
   await fn.play(page);
@@ -105,6 +106,19 @@ async function recordClip(name, fn) {
   fs.renameSync(path.join(tmpDir, file), path.join(outDir, `${name}.webm`));
   fs.rmSync(tmpDir, { recursive: true, force: true });
   console.log(`완료: ${name}.webm / ${name}.png`);
+}
+
+// Next dev 서버는 첫 요청에서 페이지를 즉석 컴파일하느라 느리다 - 녹화 전에 미리 한 번씩
+// 방문해서 워밍업해두면, 실제 녹화 중에는 오래 걸리는 컴파일 대기가 흰 화면으로 찍히지 않는다.
+{
+  const warmupPage = await browser.newPage();
+  for (const url of [
+    base,
+    `${base}/industries/212/%EC%98%81%EC%97%85%EA%B6%8C%20%EC%86%90%EC%83%81`,
+  ]) {
+    await warmupPage.goto(url, { waitUntil: "networkidle" });
+  }
+  await warmupPage.close();
 }
 
 // 1. 검색: 입력창으로 커서 이동 -> 클릭 -> 타이핑 -> 자동완성 결과로 커서 이동 -> 클릭
@@ -139,26 +153,32 @@ await recordClip("1-search", {
   },
 });
 
-// 2. 확인: 카테고리 페이지로 이동해서 체크리스트를 천천히 스크롤
+// 2. 확인: 카테고리 페이지로 이동해서 체크리스트를 천천히 스크롤 (관련 기준서 칩이 보이는
+// 지점에서 끝난다 - 3번 클립이 정확히 이 위치에서 이어받는다)
 await recordClip("2-checklist", {
   url: `${base}/industries/212/%EC%98%81%EC%97%85%EA%B6%8C%20%EC%86%90%EC%83%81`,
   waitReady: async (page) => {
     await page.locator("article").first().waitFor();
   },
   play: async (page) => {
-    for (let i = 0; i < 10; i++) {
-      await page.mouse.wheel(0, 20);
+    const ticks = 10;
+    const perTick = CHECKLIST_SCROLL_PX / ticks;
+    for (let i = 0; i < ticks; i++) {
+      await page.mouse.wheel(0, perTick);
       await page.waitForTimeout(220);
     }
     await page.waitForTimeout(800);
   },
 });
 
-// 3. 기준서 이동: 커서가 칩으로 이동 -> 강조 표시 -> 클릭 -> 기준서 페이지로 전환
+// 3. 기준서 이동: 2번이 끝난 스크롤 위치에서 그대로 시작 -> 커서가 칩으로 이동 -> 강조
+// 표시 -> 클릭 -> 기준서 페이지로 전환
 await recordClip("3-standard", {
   url: `${base}/industries/212/%EC%98%81%EC%97%85%EA%B6%8C%20%EC%86%90%EC%83%81`,
   waitReady: async (page) => {
     await page.locator('a[href^="/standards/"]').first().waitFor();
+    await page.mouse.wheel(0, CHECKLIST_SCROLL_PX);
+    await page.waitForTimeout(100);
   },
   play: async (page) => {
     const chip = page.locator('a[href^="/standards/"]').first();
