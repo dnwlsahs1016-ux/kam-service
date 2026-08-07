@@ -65,12 +65,25 @@ export default async function CategoryPage({
           ← {industryName}
         </Link>
         <h1 className="mt-2 text-2xl font-semibold tracking-tight">{category}</h1>
-        <p className="mt-2 text-zinc-600 dark:text-zinc-400">
-          {industryName} 업종에서 실제로 보고된 사례 {cases.length}건입니다. 각 사례의 감사절차를
-          체크리스트로 참고하세요. 관련 기준서를 클릭하시면 감사기준서 원문 및 회계기준서 원문으로
-          이동합니다. 또한, DART 원문 보기를 누르시면 해당 사업보고서 및 감사보고서 원문으로
-          이동합니다.
-        </p>
+        <ul className="mt-4 space-y-1.5 rounded-lg border border-zinc-200 bg-white p-4 text-sm text-zinc-600 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-400">
+          <li className="flex gap-2">
+            <span className="mt-0.5 text-accent">·</span>
+            <span>
+              {industryName} 업종에서 실제로 보고된 사례 {cases.length}건입니다.
+            </span>
+          </li>
+          <li className="flex gap-2">
+            <span className="mt-0.5 text-accent">·</span>
+            <span>각 사례의 감사절차를 체크리스트로 참고하세요.</span>
+          </li>
+          <li className="flex gap-2">
+            <span className="mt-0.5 text-accent">·</span>
+            <span>
+              관련 기준서를 클릭하시면 감사기준서 원문 및 회계기준서 원문으로, DART 원문 보기를
+              누르시면 해당 사업보고서 및 감사보고서 원문으로 이동합니다.
+            </span>
+          </li>
+        </ul>
 
         <div className="mt-4 rounded-lg border border-zinc-200 bg-white p-3 dark:border-zinc-800 dark:bg-zinc-950">
           <span className="text-xs font-medium uppercase text-zinc-500 dark:text-zinc-400">
