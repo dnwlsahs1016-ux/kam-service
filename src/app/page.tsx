@@ -1,11 +1,8 @@
 import Link from "next/link";
-import { listIndustryGroups } from "@/db/queries";
 import { CompanySearch } from "@/components/CompanySearch";
 import { GuideModal } from "@/components/GuideModal";
 
 export default async function Home() {
-  const groups = await listIndustryGroups();
-
   return (
     <div className="flex flex-1 flex-col bg-zinc-50 dark:bg-black">
       <main className="mx-auto w-full max-w-3xl flex-1 px-6 py-16">
@@ -33,33 +30,18 @@ export default async function Home() {
         <h2 className="mt-10 text-sm font-medium text-zinc-500 dark:text-zinc-400">
           혹은 아래 업종에서 직접 확인
         </h2>
-        <div className="mt-3 grid grid-cols-2 gap-px overflow-hidden rounded-lg border border-zinc-200 bg-zinc-200 dark:border-zinc-800 dark:bg-zinc-800 sm:grid-cols-5">
-          {groups.map((group) => (
-            <div key={group.major} className="flex flex-col bg-white dark:bg-zinc-950">
-              <div className="border-b border-accent/20 bg-accent-soft px-3 py-2 text-center text-sm font-semibold text-foreground">
-                {group.major}
-              </div>
-              <div className="flex flex-1 flex-col">
-                {group.items.map((item) => (
-                  <Link
-                    key={item.label}
-                    href={`/industries/${item.codes.join(",")}`}
-                    className="border-b border-zinc-100 px-3 py-3 text-center text-sm hover:bg-accent-soft dark:border-zinc-900 dark:hover:bg-zinc-900"
-                  >
-                    <div className="font-medium">{item.label}</div>
-                    <div className="mt-0.5 text-xs text-zinc-500 dark:text-zinc-400">
-                      {item.companyCount}개사 · {item.kamCount}건
-                    </div>
-                  </Link>
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
-        <p className="mt-2 text-xs text-zinc-400 dark:text-zinc-500">
-          모든 상장사를 커버하지는 않습니다. 업종 구분은 DART API가 제공하는 업종코드(KSIC) 기준으로
-          분류한 것이며, 실제 업종에 대한 인식과 다를 수 있습니다.
-        </p>
+        <Link
+          href="/industries"
+          className="mt-3 flex items-center justify-between rounded-lg border border-zinc-200 bg-white px-4 py-3 hover:border-accent/40 hover:bg-accent-soft dark:border-zinc-800 dark:bg-zinc-950 dark:hover:bg-zinc-900"
+        >
+          <span>
+            <span className="text-sm font-medium">업종별로 확인하러 가기</span>
+            <span className="ml-2 text-xs text-zinc-500 dark:text-zinc-400">
+              금융 · 소비재 · 인프라 · 전자통신 · 제조업
+            </span>
+          </span>
+          <span className="text-accent">→</span>
+        </Link>
 
         <h2 className="mt-10 text-sm font-medium text-zinc-500 dark:text-zinc-400">
           혹은 회계법인별로 확인하기
