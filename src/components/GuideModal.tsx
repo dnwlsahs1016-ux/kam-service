@@ -81,10 +81,6 @@ export function GuideModal() {
     };
   }, [open]);
 
-  // 탭을 바꾸면 실제 재생 시작까지 걸리는 시간이 매번 들쭉날쭉하다(크롬 절전 정지와의
-  // 경합 등) - 그때그때 다른 흰 화면 대신, 무조건 0.5초는 로딩 점을 보여주고 그 사이
-  // 영상을 준비시킨 다음 재생하는 편이 더 자연스럽다.
-  const MIN_LOADING_MS = 500;
   useEffect(() => {
     setStep(0);
     // 비활성 탭 영상은 멈춰서 리소스를 아낀다.
@@ -94,8 +90,7 @@ export function GuideModal() {
     const v = videoRefs.current[guideIndex];
     if (!v) return;
     v.currentTime = 0;
-    const timer = setTimeout(() => safePlay(v), MIN_LOADING_MS);
-    return () => clearTimeout(timer);
+    safePlay(v);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [guideIndex]);
 
@@ -172,19 +167,13 @@ export function GuideModal() {
                 const isPlaying = playingFlags[i];
                 return (
                   <div key={g.key} className="absolute inset-0">
-                    <img
-                      src={g.poster}
-                      alt=""
-                      className="absolute inset-0 h-full w-full object-cover"
-                      style={{ visibility: active && !isPlaying ? "visible" : "hidden" }}
-                    />
                     <div
-                      className="absolute inset-0 flex items-center justify-center gap-1.5"
+                      className="absolute inset-0 flex items-center justify-center gap-2 bg-zinc-100 dark:bg-zinc-900"
                       style={{ visibility: active && !isPlaying ? "visible" : "hidden" }}
                     >
-                      <span className="h-2.5 w-2.5 animate-bounce rounded-full bg-accent [animation-delay:-0.3s]" />
-                      <span className="h-2.5 w-2.5 animate-bounce rounded-full bg-accent [animation-delay:-0.15s]" />
-                      <span className="h-2.5 w-2.5 animate-bounce rounded-full bg-accent" />
+                      <span className="h-3.5 w-3.5 animate-bounce rounded-full bg-accent [animation-delay:-0.3s]" />
+                      <span className="h-3.5 w-3.5 animate-bounce rounded-full bg-accent [animation-delay:-0.15s]" />
+                      <span className="h-3.5 w-3.5 animate-bounce rounded-full bg-accent" />
                     </div>
                     <video
                       ref={refCallbacksRef.current[i]}
