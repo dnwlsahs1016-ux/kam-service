@@ -79,10 +79,11 @@ export default async function CategoryPage({
           </li>
           <li className="flex gap-2">
             <span className="mt-0.5 text-accent">·</span>
-            <span>
-              관련 기준서를 클릭하시면 감사기준서 원문 및 회계기준서 원문으로, DART 원문 보기를
-              누르시면 해당 사업보고서 및 감사보고서 원문으로 이동합니다.
-            </span>
+            <span>관련 기준서를 클릭하시면 감사기준서 원문 및 회계기준서 원문으로 이동합니다.</span>
+          </li>
+          <li className="flex gap-2">
+            <span className="mt-0.5 text-accent">·</span>
+            <span>DART 원문 보기를 누르시면 해당 사업보고서 및 감사보고서 원문으로 이동합니다.</span>
           </li>
         </ul>
 
