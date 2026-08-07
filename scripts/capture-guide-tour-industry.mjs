@@ -8,7 +8,7 @@ import { fileURLToPath } from "node:url";
 
 const outDir = path.join(path.dirname(fileURLToPath(import.meta.url)), "..", "public", "guide");
 const base = "http://localhost:3000";
-const SIZE = { width: 1860, height: 960 };
+const SIZE = { width: 1344, height: 694 }; // 모달 표시 폭(672px)의 2배 - HiDPI 기준 1:1, 일반 화면에선 완만한 다운스케일. 1860 소스는 실제 표시 폭보다 너무 커서(2.77배) 브라우저 비디오 스케일링 필터가 텍스트를 흐리게 그렸다(직접 캡처해서 확인).
 const ACCENT = "#d04a02";
 const INDUSTRY_HREF = "/industries/2612,264"; // 반도체
 

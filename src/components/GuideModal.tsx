@@ -11,7 +11,7 @@ const GUIDES = [
     key: "company",
     label: "기업으로 찾기",
     src: "/guide/guide-tour.mp4",
-    stepBoundaries: [0, 7.036, 10.998],
+    stepBoundaries: [0, 7.094, 11.06],
     steps: [
       { title: "1. 검색", desc: "기업 이름으로 검색하세요." },
       { title: "2. 확인", desc: "그 회사의 KAM 사례와 감사절차 체크리스트를 확인하세요." },
@@ -22,7 +22,7 @@ const GUIDES = [
     key: "industry",
     label: "업종에서 찾기",
     src: "/guide/guide-tour-industry.mp4",
-    stepBoundaries: [0, 6.92, 9.993],
+    stepBoundaries: [0, 7.138, 10.309],
     steps: [
       { title: "1. 업종 선택", desc: "홈에서 업종별로 확인하러 가기를 눌러 관심 있는 업종을 선택하세요." },
       { title: "2. 카테고리 선택", desc: "업종 내 주요 KAM 카테고리를 선택하세요." },
@@ -33,7 +33,7 @@ const GUIDES = [
     key: "auditors",
     label: "회계법인으로 찾기",
     src: "/guide/guide-tour-auditors.mp4",
-    stepBoundaries: [0, 5.582, 8.529],
+    stepBoundaries: [0, 5.565, 8.53],
     steps: [
       { title: "1. 회계법인 선택", desc: "홈에서 회계법인으로 찾기를 눌러 관심 있는 회계법인을 선택하세요." },
       { title: "2. 업종 선택", desc: "그 법인이 감사인인 회사를 업종별로 확인하세요." },
