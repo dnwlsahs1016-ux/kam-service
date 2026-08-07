@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { isAuditorCategory, listCompaniesForAuditor } from "@/db/queries";
+import { AUDITOR_COLORS } from "@/lib/auditorColors";
 
 export default async function AuditorMinorPage({
   params,
@@ -12,6 +13,7 @@ export default async function AuditorMinorPage({
   const minorLabel = decodeURIComponent(rawMinor);
 
   if (!isAuditorCategory(category)) notFound();
+  const colors = AUDITOR_COLORS[category];
 
   const majors = await listCompaniesForAuditor(category);
   const major = majors.find((g) => g.minors.some((m) => m.label === minorLabel));
@@ -21,7 +23,7 @@ export default async function AuditorMinorPage({
   return (
     <div className="flex flex-1 flex-col bg-zinc-50 dark:bg-black">
       <main className="mx-auto w-full max-w-3xl flex-1 px-6 py-16">
-        <Link href={`/auditors/${category}`} className="text-sm text-accent hover:underline">
+        <Link href={`/auditors/${category}`} className={`text-sm hover:underline ${colors.text}`}>
           ← {category}
         </Link>
         <h1 className="mt-2 text-2xl font-semibold tracking-tight">{minor.label}</h1>
@@ -35,7 +37,7 @@ export default async function AuditorMinorPage({
             <li key={c.corpCode} className="w-[calc(50%-0.375rem)] sm:w-[calc(33.333%-0.5rem)]">
               <Link
                 href={`/companies/${c.corpCode}`}
-                className="flex h-full flex-col rounded-lg border border-zinc-200 bg-white px-3 py-3 hover:border-accent/40 hover:bg-accent-soft dark:border-zinc-800 dark:bg-zinc-950 dark:hover:bg-zinc-900"
+                className={`flex h-full flex-col rounded-lg border border-zinc-200 bg-white px-3 py-3 dark:border-zinc-800 dark:bg-zinc-950 ${colors.hoverBg}`}
               >
                 <span className="text-sm font-medium">{c.corpName}</span>
                 <span className="mt-0.5 text-xs text-zinc-500 dark:text-zinc-400">{c.adtorName}</span>

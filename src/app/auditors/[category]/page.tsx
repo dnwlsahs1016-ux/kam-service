@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { isAuditorCategory, listCompaniesForAuditor } from "@/db/queries";
+import { AUDITOR_COLORS } from "@/lib/auditorColors";
 
 export default async function AuditorCategoryPage({
   params,
@@ -11,6 +12,7 @@ export default async function AuditorCategoryPage({
   const category = decodeURIComponent(rawCategory);
 
   if (!isAuditorCategory(category)) notFound();
+  const colors = AUDITOR_COLORS[category];
 
   const majors = await listCompaniesForAuditor(category);
   if (majors.length === 0) notFound();
@@ -23,7 +25,7 @@ export default async function AuditorCategoryPage({
   return (
     <div className="flex flex-1 flex-col bg-zinc-50 dark:bg-black">
       <main className="mx-auto w-full max-w-3xl flex-1 px-6 py-16">
-        <Link href="/auditors" className="text-sm text-accent hover:underline">
+        <Link href="/auditors" className={`text-sm hover:underline ${colors.text}`}>
           ← 회계법인 목록
         </Link>
         <h1 className="mt-2 text-2xl font-semibold tracking-tight">{category}</h1>
@@ -36,7 +38,7 @@ export default async function AuditorCategoryPage({
         <div className="mt-6 grid grid-cols-2 gap-px overflow-hidden rounded-lg border border-zinc-200 bg-zinc-200 dark:border-zinc-800 dark:bg-zinc-800 sm:grid-cols-5">
           {majors.map((major) => (
             <div key={major.major} className="flex flex-col bg-white dark:bg-zinc-950">
-              <div className="border-b border-accent/20 bg-accent-soft px-3 py-2 text-center text-sm font-semibold text-foreground">
+              <div className={`border-b px-3 py-2 text-center text-sm font-semibold text-foreground ${colors.border} ${colors.fill}`}>
                 {major.major}
               </div>
               <div className="flex flex-1 flex-col">
@@ -44,7 +46,7 @@ export default async function AuditorCategoryPage({
                   <Link
                     key={minor.label}
                     href={`/auditors/${category}/${encodeURIComponent(minor.label)}`}
-                    className="border-b border-zinc-100 px-3 py-3 text-center text-sm hover:bg-accent-soft dark:border-zinc-900 dark:hover:bg-zinc-900"
+                    className={`border-b border-zinc-100 px-3 py-3 text-center text-sm dark:border-zinc-900 ${colors.hoverBg}`}
                   >
                     <div className="font-medium">{minor.label}</div>
                     <div className="mt-0.5 text-xs text-zinc-500 dark:text-zinc-400">
