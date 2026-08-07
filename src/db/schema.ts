@@ -24,6 +24,17 @@ export const companies = sqliteTable("companies", {
   industryName: text("industry_name"),
 });
 
+// 회사별 현재(2026년 1분기보고서 기준) 감사인 - KAM 데이터가 있는 회사만 대상으로 한다.
+export const companyAuditors = sqliteTable("company_auditors", {
+  corpCode: text("corp_code")
+    .primaryKey()
+    .references(() => companies.corpCode),
+  bsnsYear: text("bsns_year").notNull(), // e.g. "2026"
+  reprtCode: text("reprt_code").notNull(), // DART reprt_code, e.g. "11013"(1분기보고서)
+  adtorName: text("adtor_name").notNull(), // DART 원문 그대로, 예: "삼정회계법인"
+  category: text("category", { enum: ["삼일", "삼정", "안진", "한영", "기타"] }).notNull(),
+});
+
 // 감사보고서(사업보고서 첨부) 공시 건
 export const kamFilings = sqliteTable(
   "kam_filings",

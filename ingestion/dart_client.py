@@ -43,6 +43,25 @@ def get_company(corp_code: str) -> dict:
     return resp.json()
 
 
+def get_auditor_opinion(corp_code: str, bsns_year: str, reprt_code: str) -> dict:
+    """정기보고서 주요정보 - 회계감사인의 명칭 및 감사(검토)의견.
+
+    reprt_code: 사업보고서 11011 / 반기보고서 11012 / 1분기 11013 / 3분기 11014.
+    """
+    resp = requests.get(
+        f"{BASE_URL}/accnutAdtorNmNdAdtOpinion.json",
+        params={
+            "crtfc_key": _api_key(),
+            "corp_code": corp_code,
+            "bsns_year": bsns_year,
+            "reprt_code": reprt_code,
+        },
+        timeout=15,
+    )
+    resp.raise_for_status()
+    return resp.json()
+
+
 def search_filings(
     corp_code: str | None = None,
     bgn_de: str | None = None,

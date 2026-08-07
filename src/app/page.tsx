@@ -60,6 +60,22 @@ export default async function Home() {
           모든 상장사를 커버하지는 않습니다. 업종 구분은 DART API가 제공하는 업종코드(KSIC) 기준으로
           분류한 것이며, 실제 업종에 대한 인식과 다를 수 있습니다.
         </p>
+
+        <h2 className="mt-10 text-sm font-medium text-zinc-500 dark:text-zinc-400">
+          혹은 회계법인별로 확인하기
+        </h2>
+        <Link
+          href="/auditors"
+          className="mt-3 flex items-center justify-between rounded-lg border border-zinc-200 bg-white px-4 py-3 hover:border-accent/40 hover:bg-accent-soft dark:border-zinc-800 dark:bg-zinc-950 dark:hover:bg-zinc-900"
+        >
+          <span>
+            <span className="text-sm font-medium">4대 회계법인 + 로컬로 나눠보기</span>
+            <span className="ml-2 text-xs text-zinc-500 dark:text-zinc-400">
+              삼일 · 삼정 · 안진 · 한영 · 기타
+            </span>
+          </span>
+          <span className="text-accent">→</span>
+        </Link>
       </main>
     </div>
   );

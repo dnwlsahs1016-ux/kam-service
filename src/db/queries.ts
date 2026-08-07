@@ -1,6 +1,6 @@
 import { and, desc, eq, inArray, sql } from "drizzle-orm";
 import { db } from "./index";
-import { companies, kamFilings, kamItems, kamRawItems, standards } from "./schema";
+import { companies, companyAuditors, kamFilings, kamItems, kamRawItems, standards } from "./schema";
 import { findMinorByCode, INDUSTRY_GROUPS } from "@/lib/industryGroups";
 import { getIfrsRefsForCategory, ifrsRefFromCode, type IfrsRef } from "@/lib/ifrsStandards";
 import { getProcedureRefsForCategory } from "@/lib/auditProcedureReferences";
@@ -82,6 +82,47 @@ export async function listCasesForCategory(codes: string[], category: string) {
     ifrsRefs: resolveIfrsRefs(category, r.ifrsRefsJson),
     procedureRefs: getProcedureRefsForCategory(category),
   }));
+}
+
+const AUDITOR_ORDER = ["삼일", "삼정", "안진", "한영", "기타"] as const;
+export type AuditorCategory = (typeof AUDITOR_ORDER)[number];
+
+export function isAuditorCategory(value: string): value is AuditorCategory {
+  return (AUDITOR_ORDER as readonly string[]).includes(value);
+}
+
+export async function listAuditorFirms() {
+  const rows = await db
+    .select({ category: companyAuditors.category, count: sql<number>`count(*)` })
+    .from(companyAuditors)
+    .groupBy(companyAuditors.category);
+  const counts = new Map(rows.map((r) => [r.category, r.count]));
+  return AUDITOR_ORDER.map((category) => ({ category, count: counts.get(category) ?? 0 }));
+}
+
+export async function listCompaniesForAuditor(category: AuditorCategory) {
+  const rows = await db
+    .select({
+      corpCode: companies.corpCode,
+      corpName: companies.corpName,
+      industryCode: companies.industryCode,
+      industryName: companies.industryName,
+      adtorName: companyAuditors.adtorName,
+    })
+    .from(companyAuditors)
+    .innerJoin(companies, eq(companies.corpCode, companyAuditors.corpCode))
+    .where(eq(companyAuditors.category, category))
+    .orderBy(companies.corpName);
+
+  const groups = new Map<string, { corpCode: string; corpName: string; adtorName: string }[]>();
+  for (const r of rows) {
+    const label = (r.industryCode ? findMinorByCode(r.industryCode)?.label : null) ?? r.industryName ?? "기타 업종";
+    if (!groups.has(label)) groups.set(label, []);
+    groups.get(label)!.push({ corpCode: r.corpCode, corpName: r.corpName, adtorName: r.adtorName });
+  }
+  return [...groups.entries()]
+    .map(([industryLabel, items]) => ({ industryLabel, companies: items }))
+    .sort((a, b) => b.companies.length - a.companies.length);
 }
 
 export async function searchCompanies(q: string) {
