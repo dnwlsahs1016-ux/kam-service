@@ -29,35 +29,28 @@ export default async function AuditorCategoryPage({
         <h1 className="mt-2 text-2xl font-semibold tracking-tight">{category}</h1>
         <p className="mt-2 text-zinc-600 dark:text-zinc-400">
           2026년 1분기보고서 기준 현재 감사인이 {category === "기타" ? "4대 회계법인 외 회계법인" : `${category}회계법인`}인
-          회사 {totalCount}곳을 업종별로 모았습니다.
+          회사 {totalCount}곳을 업종별로 모았습니다. 업종을 선택하면 해당 회사 목록을 볼 수
+          있습니다.
         </p>
 
-        <div className="mt-6 space-y-8">
+        <div className="mt-6 grid grid-cols-2 gap-px overflow-hidden rounded-lg border border-zinc-200 bg-zinc-200 dark:border-zinc-800 dark:bg-zinc-800 sm:grid-cols-5">
           {majors.map((major) => (
-            <div key={major.major}>
-              <h2 className="text-sm font-semibold text-accent">{major.major}</h2>
-              <div className="mt-3 space-y-5">
+            <div key={major.major} className="flex flex-col bg-white dark:bg-zinc-950">
+              <div className="border-b border-accent/20 bg-accent-soft px-3 py-2 text-center text-sm font-semibold text-foreground">
+                {major.major}
+              </div>
+              <div className="flex flex-1 flex-col">
                 {major.minors.map((minor) => (
-                  <div key={minor.label}>
-                    <h3 className="text-sm font-medium text-zinc-500 dark:text-zinc-400">
-                      {minor.label} · {minor.companies.length}개사
-                    </h3>
-                    <ul className="mt-2 grid grid-cols-2 gap-px overflow-hidden rounded-lg border border-zinc-200 bg-zinc-200 dark:border-zinc-800 dark:bg-zinc-800 sm:grid-cols-3">
-                      {minor.companies.map((c) => (
-                        <li key={c.corpCode} className="bg-white dark:bg-zinc-950">
-                          <Link
-                            href={`/companies/${c.corpCode}`}
-                            className="flex flex-col px-3 py-3 hover:bg-accent-soft dark:hover:bg-zinc-900"
-                          >
-                            <span className="text-sm font-medium">{c.corpName}</span>
-                            <span className="mt-0.5 text-xs text-zinc-500 dark:text-zinc-400">
-                              {c.adtorName}
-                            </span>
-                          </Link>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
+                  <Link
+                    key={minor.label}
+                    href={`/auditors/${category}/${encodeURIComponent(minor.label)}`}
+                    className="border-b border-zinc-100 px-3 py-3 text-center text-sm hover:bg-accent-soft dark:border-zinc-900 dark:hover:bg-zinc-900"
+                  >
+                    <div className="font-medium">{minor.label}</div>
+                    <div className="mt-0.5 text-xs text-zinc-500 dark:text-zinc-400">
+                      {minor.companies.length}개사
+                    </div>
+                  </Link>
                 ))}
               </div>
             </div>
