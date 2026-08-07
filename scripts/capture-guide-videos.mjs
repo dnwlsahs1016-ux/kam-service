@@ -185,14 +185,20 @@ await recordClip("3-standard", {
     const chipBox = await chip.boundingBox();
     await moveMouseSmooth(page, chipBox.x + chipBox.width / 2, chipBox.y + chipBox.height / 2, {
       from: { x: 20, y: 20 },
-      steps: 28,
-      stepDelay: 16,
+      steps: 45,
+      stepDelay: 30,
     });
     await ringHighlight(page, chipBox);
-    await page.waitForTimeout(600);
+    await page.waitForTimeout(800);
     await chip.click();
     await page.waitForSelector("main");
-    await page.waitForTimeout(1000);
+    await page.waitForTimeout(500);
+    // 도착한 기준서 페이지도 조금 스크롤해서 내용을 보여준다.
+    for (let i = 0; i < 6; i++) {
+      await page.mouse.wheel(0, 25);
+      await page.waitForTimeout(220);
+    }
+    await page.waitForTimeout(800);
   },
 });
 
