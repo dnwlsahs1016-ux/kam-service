@@ -12,7 +12,7 @@ const GUIDES = [
     label: "기업으로 찾기",
     src: "/guide/guide-tour.mp4",
     poster: "/guide/guide-tour-poster.png",
-    stepBoundaries: [0, 6.734, 9.557],
+    stepBoundaries: [0, 5.546, 8.338],
     steps: [
       { title: "1. 검색", desc: "기업 이름으로 검색하세요." },
       { title: "2. 확인", desc: "그 회사의 KAM 사례와 감사절차 체크리스트를 확인하세요." },
@@ -24,7 +24,7 @@ const GUIDES = [
     label: "업종에서 찾기",
     src: "/guide/guide-tour-industry.mp4",
     poster: "/guide/guide-tour-industry-poster.png",
-    stepBoundaries: [0, 3.945, 6.445],
+    stepBoundaries: [0, 3.395, 5.717],
     steps: [
       { title: "1. 업종 선택", desc: "관심 있는 업종을 선택하세요." },
       { title: "2. 카테고리 선택", desc: "업종 내 주요 KAM 카테고리를 선택하세요." },
@@ -97,7 +97,7 @@ export function GuideModal() {
           onClick={() => setOpen(false)}
         >
           <div
-            className="w-full max-w-4xl overflow-hidden rounded-xl bg-white shadow-2xl dark:bg-zinc-950"
+            className="w-full max-w-2xl overflow-hidden rounded-xl bg-white shadow-2xl dark:bg-zinc-950"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between border-b border-zinc-200 px-5 py-3 dark:border-zinc-800">
