@@ -43,7 +43,7 @@ export default async function Home() {
         </div>
 
         <div className="mt-6 rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-950">
-          <h3 className="text-xs font-medium uppercase text-zinc-500 dark:text-zinc-400">
+          <h3 className="text-xs font-medium uppercase text-accent/70">
             이용 가이드
             <span className="ml-1 normal-case text-zinc-400 dark:text-zinc-500">
               (화면에 마우스를 올리면 재생됩니다)

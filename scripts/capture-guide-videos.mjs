@@ -1,5 +1,7 @@
-// 홈 화면 "이용 가이드"에 넣을 짧은 화면 녹화 3개(webm)를 만든다. 마우스 커서를 화면에
-// 그려 넣어서 어디를 클릭하는지 보이게 하고, 실제 클릭 동작까지 녹화한다.
+// 홈 화면 "이용 가이드"에 넣을 짧은 화면 녹화 3개(webm)와, 각 녹화의 실제 첫 프레임과
+// 완전히 동일한 poster 이미지를 함께 만든다(같은 페이지 로드 상태에서 그대로 캡처하므로
+// poster와 GIF 첫 화면이 어긋나지 않는다). 마우스 커서도 화면에 그려 넣어서 어디를
+// 클릭하는지 보이게 한다.
 // 실행 전 로컬 dev 서버(localhost:3000)가 떠 있어야 한다.
 import { chromium } from "playwright";
 import fs from "node:fs";
@@ -9,6 +11,7 @@ import { fileURLToPath } from "node:url";
 const outDir = path.join(path.dirname(fileURLToPath(import.meta.url)), "..", "public", "guide");
 const base = "http://localhost:3000";
 const SIZE = { width: 620, height: 320 };
+const ACCENT = "#d04a02"; // 사이트 accent 주황색과 맞춤
 
 const browser = await chromium.launch();
 
@@ -53,6 +56,30 @@ async function moveMouseSmooth(page, toX, toY, { steps = 20, stepDelay = 20, fro
   await page.evaluate(({ x, y }) => (window.__lastMouse__ = { x, y }), { x: toX, y: toY });
 }
 
+// 클릭 직전에 대상 요소 주변에 강조 테두리를 그려 넣는다(실제 페이지엔 영향 없음).
+async function ringHighlight(page, box, color = ACCENT) {
+  await page.evaluate(
+    ({ b, color }) => {
+      const el = document.createElement("div");
+      el.id = "__ring_highlight__";
+      Object.assign(el.style, {
+        position: "fixed",
+        left: `${b.x - 8}px`,
+        top: `${b.y - 8}px`,
+        width: `${b.width + 16}px`,
+        height: `${b.height + 16}px`,
+        border: `3px solid ${color}`,
+        borderRadius: "999px",
+        boxShadow: `0 0 0 4px ${color}40`,
+        pointerEvents: "none",
+        zIndex: 2147483646,
+      });
+      document.body.appendChild(el);
+    },
+    { b: box, color }
+  );
+}
+
 async function recordClip(name, fn) {
   const tmpDir = path.join(outDir, `_tmp_${name}`);
   fs.mkdirSync(tmpDir, { recursive: true });
@@ -62,69 +89,91 @@ async function recordClip(name, fn) {
   });
   await context.addInitScript(CURSOR_INIT_SCRIPT);
   const page = await context.newPage();
-  await fn(page);
+
+  // 첫 프레임: 페이지가 안정된 직후, 커서/하이라이트가 나타나기 전 상태를 그대로
+  // poster PNG로도 저장한다 - GIF 재생 시작 프레임과 완전히 동일해진다.
+  await page.goto(fn.url);
+  await fn.waitReady(page);
+  await page.waitForTimeout(500); // 녹화 초반 프레임 튐 방지용 정지 구간
+  await page.screenshot({ path: path.join(outDir, `${name}.png`), clip: { x: 0, y: 0, ...SIZE } });
+
+  await fn.play(page);
+  await page.waitForTimeout(1000);
+
   await context.close();
   const [file] = fs.readdirSync(tmpDir);
   fs.renameSync(path.join(tmpDir, file), path.join(outDir, `${name}.webm`));
   fs.rmSync(tmpDir, { recursive: true, force: true });
-  console.log(`완료: ${name}.webm`);
+  console.log(`완료: ${name}.webm / ${name}.png`);
 }
 
 // 1. 검색: 입력창으로 커서 이동 -> 클릭 -> 타이핑 -> 자동완성 결과로 커서 이동 -> 클릭
-await recordClip("1-search", async (page) => {
-  await page.goto(base);
-  const input = page.locator('input[name="q"]');
-  await input.scrollIntoViewIfNeeded();
-  const inputBox = await input.boundingBox();
-  await moveMouseSmooth(page, inputBox.x + inputBox.width / 2, inputBox.y + inputBox.height / 2, {
-    from: { x: 20, y: 20 },
-  });
-  await page.click('input[name="q"]');
-  await page.waitForTimeout(200);
-  await page.type('input[name="q"]', "삼성", { delay: 140 });
-  await page.waitForSelector("#company-search-listbox li:nth-child(1)");
-  await page.waitForTimeout(400);
-  const firstResult = page.locator("#company-search-listbox li").first();
-  const resultBox = await firstResult.boundingBox();
-  await moveMouseSmooth(page, resultBox.x + resultBox.width / 2, resultBox.y + resultBox.height / 2, {
-    steps: 15,
-  });
-  await page.waitForTimeout(300);
-  await firstResult.click();
-  await page.waitForTimeout(1200);
+await recordClip("1-search", {
+  url: base,
+  waitReady: async (page) => {
+    await page.locator('input[name="q"]').waitFor();
+  },
+  play: async (page) => {
+    const input = page.locator('input[name="q"]');
+    const inputBox = await input.boundingBox();
+    await moveMouseSmooth(page, inputBox.x + inputBox.width / 2, inputBox.y + inputBox.height / 2, {
+      from: { x: 20, y: 20 },
+      steps: 25,
+      stepDelay: 16,
+    });
+    await page.waitForTimeout(150);
+    await page.click('input[name="q"]');
+    await page.waitForTimeout(300);
+    await page.type('input[name="q"]', "삼성", { delay: 180 });
+    await page.waitForSelector("#company-search-listbox li:nth-child(1)");
+    await page.waitForTimeout(500);
+    const firstResult = page.locator("#company-search-listbox li").first();
+    const resultBox = await firstResult.boundingBox();
+    await moveMouseSmooth(page, resultBox.x + resultBox.width / 2, resultBox.y + resultBox.height / 2, {
+      steps: 18,
+      stepDelay: 16,
+    });
+    await page.waitForTimeout(400);
+    await firstResult.click();
+    await page.waitForTimeout(1000);
+  },
 });
 
 // 2. 확인: 카테고리 페이지로 이동해서 체크리스트를 천천히 스크롤
-await recordClip("2-checklist", async (page) => {
-  await page.goto(`${base}/industries/212/%EC%98%81%EC%97%85%EA%B6%8C%20%EC%86%90%EC%83%81`);
-  const article = page.locator("article").first();
-  await article.waitFor();
-  await article.scrollIntoViewIfNeeded();
-  await page.waitForTimeout(500);
-  for (let i = 0; i < 8; i++) {
-    await page.mouse.wheel(0, 25);
-    await page.waitForTimeout(160);
-  }
-  await page.waitForTimeout(1000);
+await recordClip("2-checklist", {
+  url: `${base}/industries/212/%EC%98%81%EC%97%85%EA%B6%8C%20%EC%86%90%EC%83%81`,
+  waitReady: async (page) => {
+    await page.locator("article").first().waitFor();
+  },
+  play: async (page) => {
+    for (let i = 0; i < 10; i++) {
+      await page.mouse.wheel(0, 20);
+      await page.waitForTimeout(220);
+    }
+    await page.waitForTimeout(800);
+  },
 });
 
-// 3. 기준서 이동: 커서가 칩으로 이동 -> 클릭 -> 기준서 페이지로 전환되는 것까지
-await recordClip("3-standard", async (page) => {
-  await page.goto(`${base}/industries/212/%EC%98%81%EC%97%85%EA%B6%8C%20%EC%86%90%EC%83%81`);
-  const chip = page.locator('a[href^="/standards/"]').first();
-  await chip.waitFor();
-  await chip.scrollIntoViewIfNeeded();
-  await page.waitForTimeout(400);
-  const chipBox = await chip.boundingBox();
-  await moveMouseSmooth(page, chipBox.x + chipBox.width / 2, chipBox.y + chipBox.height / 2, {
-    from: { x: 20, y: 20 },
-    steps: 25,
-  });
-  await chip.hover();
-  await page.waitForTimeout(500);
-  await chip.click();
-  await page.waitForSelector("main");
-  await page.waitForTimeout(1200);
+// 3. 기준서 이동: 커서가 칩으로 이동 -> 강조 표시 -> 클릭 -> 기준서 페이지로 전환
+await recordClip("3-standard", {
+  url: `${base}/industries/212/%EC%98%81%EC%97%85%EA%B6%8C%20%EC%86%90%EC%83%81`,
+  waitReady: async (page) => {
+    await page.locator('a[href^="/standards/"]').first().waitFor();
+  },
+  play: async (page) => {
+    const chip = page.locator('a[href^="/standards/"]').first();
+    const chipBox = await chip.boundingBox();
+    await moveMouseSmooth(page, chipBox.x + chipBox.width / 2, chipBox.y + chipBox.height / 2, {
+      from: { x: 20, y: 20 },
+      steps: 28,
+      stepDelay: 16,
+    });
+    await ringHighlight(page, chipBox);
+    await page.waitForTimeout(600);
+    await chip.click();
+    await page.waitForSelector("main");
+    await page.waitForTimeout(1000);
+  },
 });
 
 await browser.close();
