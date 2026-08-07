@@ -24,11 +24,11 @@ const GUIDES = [
     label: "업종에서 찾기",
     src: "/guide/guide-tour-industry.mp4",
     poster: "/guide/guide-tour-industry-poster.png",
-    stepBoundaries: [0, 3.395, 5.717],
+    stepBoundaries: [0, 3.389, 5.775],
     steps: [
       { title: "1. 업종 선택", desc: "관심 있는 업종을 선택하세요." },
       { title: "2. 카테고리 선택", desc: "업종 내 주요 KAM 카테고리를 선택하세요." },
-      { title: "3. 기준서 이동", desc: "관련 기준서를 클릭하면 원문으로 바로 이동합니다." },
+      { title: "3. 회계기준서 이동", desc: "관련 회계기준서를 클릭하면 원문으로 바로 이동합니다." },
     ],
   },
 ];
@@ -37,8 +37,8 @@ export function GuideModal() {
   const [open, setOpen] = useState(false);
   const [guideIndex, setGuideIndex] = useState(0);
   const [step, setStep] = useState(0);
-  const [ready, setReady] = useState(false);
-  const videoRef = useRef<HTMLVideoElement>(null);
+  const [readyFlags, setReadyFlags] = useState<boolean[]>(() => GUIDES.map(() => false));
+  const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
 
   const guide = GUIDES[guideIndex];
 
@@ -56,12 +56,23 @@ export function GuideModal() {
   }, [open]);
 
   useEffect(() => {
-    setReady(false);
     setStep(0);
+    // 두 가이드 모두 모달이 열려있는 동안 계속 프리로드되고 있어서, 이미 준비된(canplaythrough
+    // 지난) 영상으로 전환할 때는 흰 화면 없이 바로 재생한다.
+    const v = videoRefs.current[guideIndex];
+    if (v && readyFlags[guideIndex]) {
+      v.currentTime = 0;
+      v.play();
+    }
+    // 비활성 탭 영상은 멈춰서 리소스를 아낀다.
+    videoRefs.current.forEach((el, i) => {
+      if (el && i !== guideIndex) el.pause();
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [guideIndex]);
 
   function seekToStep(i: number) {
-    const v = videoRef.current;
+    const v = videoRefs.current[guideIndex];
     if (!v) return;
     v.currentTime = guide.stepBoundaries[i] + 0.05;
     setStep(i);
@@ -128,40 +139,59 @@ export function GuideModal() {
             </div>
 
             <div className="relative aspect-[31/16] bg-zinc-100 dark:bg-zinc-900">
-              <img
-                src={guide.poster}
-                alt=""
-                className="absolute inset-0 h-full w-full object-cover"
-                style={{ visibility: ready ? "hidden" : "visible" }}
-              />
-              {!ready && (
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="h-8 w-8 animate-spin rounded-full border-2 border-accent/30 border-t-accent" />
-                </div>
-              )}
-              <video
-                key={guide.src}
-                ref={videoRef}
-                src={guide.src}
-                muted
-                loop
-                playsInline
-                preload="auto"
-                className="absolute inset-0 h-full w-full object-cover"
-                style={{ visibility: ready ? "visible" : "hidden" }}
-                onCanPlayThrough={() => {
-                  setReady(true);
-                  videoRef.current?.play();
-                }}
-                onTimeUpdate={() => {
-                  const t = videoRef.current?.currentTime ?? 0;
-                  let i = 0;
-                  for (let j = 0; j < guide.stepBoundaries.length; j++) {
-                    if (t >= guide.stepBoundaries[j]) i = j;
-                  }
-                  setStep(i);
-                }}
-              />
+              {GUIDES.map((g, i) => {
+                const active = i === guideIndex;
+                const isReady = readyFlags[i];
+                return (
+                  <div
+                    key={g.key}
+                    className="absolute inset-0"
+                    style={{ visibility: active ? "visible" : "hidden" }}
+                  >
+                    <img
+                      src={g.poster}
+                      alt=""
+                      className="absolute inset-0 h-full w-full object-cover"
+                      style={{ visibility: isReady ? "hidden" : "visible" }}
+                    />
+                    {active && !isReady && (
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <div className="h-8 w-8 animate-spin rounded-full border-2 border-accent/30 border-t-accent" />
+                      </div>
+                    )}
+                    <video
+                      ref={(el) => {
+                        videoRefs.current[i] = el;
+                      }}
+                      src={g.src}
+                      muted
+                      loop
+                      playsInline
+                      preload="auto"
+                      className="absolute inset-0 h-full w-full object-cover"
+                      style={{ visibility: isReady ? "visible" : "hidden" }}
+                      onCanPlayThrough={() => {
+                        setReadyFlags((prev) => {
+                          if (prev[i]) return prev;
+                          const next = [...prev];
+                          next[i] = true;
+                          return next;
+                        });
+                        if (i === guideIndex) videoRefs.current[i]?.play();
+                      }}
+                      onTimeUpdate={() => {
+                        if (i !== guideIndex) return;
+                        const t = videoRefs.current[i]?.currentTime ?? 0;
+                        let s = 0;
+                        for (let j = 0; j < g.stepBoundaries.length; j++) {
+                          if (t >= g.stepBoundaries[j]) s = j;
+                        }
+                        setStep(s);
+                      }}
+                    />
+                  </div>
+                );
+              })}
             </div>
 
             <div className="px-5 py-4">

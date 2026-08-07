@@ -130,9 +130,10 @@ await categoryLink.click();
 await page.waitForSelector("article");
 await page.waitForTimeout(600);
 
-// ── 3. 기준서 이동 (스크롤 후 첫 기준서 칩 클릭) ────────────────
+// ── 3. 기준서 이동 (회계기준서(K-IFRS) 칩 클릭 - 기업으로 찾기 가이드가 이미 감사기준서
+// 클릭을 보여주므로, 여기서는 다른 종류의 기준서로 다양성을 준다) ────────────────
 const t2 = elapsed();
-const chip = page.locator('a[href^="/standards/"]').first();
+const chip = page.locator('a[href*="samili.com"]').first();
 await chip.waitFor();
 const chipBoxBeforeScroll = await chip.boundingBox();
 const targetY = SIZE.height - chipBoxBeforeScroll.height - 40;
@@ -151,18 +152,26 @@ await moveMouseSmooth(page, cx, cy, { steps: 14 });
 await ringHighlight(page, chipBox);
 await page.waitForTimeout(700);
 
-await chip.click();
-await page.waitForSelector("main");
+// 회계기준서 링크는 새 탭(target="_blank")으로 열린다 - 그 탭은 별도 영상으로 녹화되어
+// 이어붙일 수 없으므로, 클릭 -> 새 탭이 뜨는 것만 확인하고 바로 닫아서 원래 탭(메인 녹화)에
+// 계속 머문다.
+const [popup] = await Promise.all([context.waitForEvent("page"), chip.click()]);
+await popup.waitForLoadState("domcontentloaded").catch(() => {});
+await page.waitForTimeout(500);
+await popup.close();
+await page.waitForTimeout(300);
 await page.evaluate(() => document.getElementById("__ring_highlight__")?.remove());
-await page.waitForTimeout(400);
-for (let i = 0; i < 5; i++) {
-  await page.mouse.wheel(0, 50);
-  await page.waitForTimeout(180);
-}
 await page.waitForTimeout(800);
 
 await context.close();
-const [file] = fs.readdirSync(tmpDir);
+// recordVideo는 컨텍스트 안에서 열린 모든 페이지를 각각 녹화한다 - 회계기준서 링크가 새 탭
+// (팝업)으로 열리면서 짧은 팝업용 영상 파일도 함께 생겼다. 메인 녹화(가장 긴/큰 파일)만
+// 골라 쓴다.
+const files = fs.readdirSync(tmpDir).map((f) => ({
+  name: f,
+  size: fs.statSync(path.join(tmpDir, f)).size,
+}));
+const file = files.sort((a, b) => b.size - a.size)[0].name;
 fs.renameSync(path.join(tmpDir, file), path.join(outDir, "guide-tour-industry.webm"));
 fs.rmSync(tmpDir, { recursive: true, force: true });
 
