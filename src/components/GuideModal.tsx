@@ -75,7 +75,7 @@ export function GuideModal() {
           onClick={() => setOpen(false)}
         >
           <div
-            className="w-full max-w-2xl overflow-hidden rounded-xl bg-white shadow-2xl dark:bg-zinc-950"
+            className="w-full max-w-4xl overflow-hidden rounded-xl bg-white shadow-2xl dark:bg-zinc-950"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between border-b border-zinc-200 px-5 py-3 dark:border-zinc-800">
