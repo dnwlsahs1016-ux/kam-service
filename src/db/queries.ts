@@ -63,6 +63,7 @@ export async function listCasesForCategory(codes: string[], category: string) {
       proceduresJson: kamItems.proceduresJson,
       standardRefsJson: kamItems.standardRefsJson,
       ifrsRefsJson: kamItems.ifrsRefsJson,
+      corpCode: companies.corpCode,
       corpName: companies.corpName,
       fiscalYear: kamFilings.fiscalYear,
       sourceUrl: kamFilings.sourceUrl,
