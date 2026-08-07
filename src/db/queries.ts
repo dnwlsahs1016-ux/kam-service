@@ -1,7 +1,7 @@
 import { and, desc, eq, inArray, sql } from "drizzle-orm";
 import { db } from "./index";
 import { companies, kamFilings, kamItems, kamRawItems, standards } from "./schema";
-import { INDUSTRY_GROUPS } from "@/lib/industryGroups";
+import { findMinorByCode, INDUSTRY_GROUPS } from "@/lib/industryGroups";
 import { getIfrsRefsForCategory, ifrsRefFromCode, type IfrsRef } from "@/lib/ifrsStandards";
 import { getProcedureRefsForCategory } from "@/lib/auditProcedureReferences";
 
@@ -99,7 +99,13 @@ export async function searchCompanies(q: string) {
     .innerJoin(kamItems, eq(kamItems.rawItemId, kamRawItems.id))
     .where(sql`${companies.corpName} LIKE ${"%" + q.trim() + "%"}`)
     .limit(30);
-  return rows;
+  // companies.industry_name은 DART 원본 값이라 비어있는 경우가 많다(예: 삼성전자) - 화면
+  // 표시용 업종 라벨은 industryGroups.ts의 코드 매핑으로 우선 채우고, 매핑이 없을 때만
+  // 원본 값으로 폴백한다.
+  return rows.map((r) => ({
+    ...r,
+    industryName: (r.industryCode ? findMinorByCode(r.industryCode)?.label : null) ?? r.industryName,
+  }));
 }
 
 export async function getCompanyName(corpCode: string) {

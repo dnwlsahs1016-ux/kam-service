@@ -50,7 +50,7 @@ export const INDUSTRY_GROUPS: IndustryMajor[] = [
     items: [
       { label: "반도체", codes: ["2612", "264"] },
       { label: "자동차", codes: ["30121", "303"] },
-      { label: "제약·바이오", codes: ["212"] },
+      { label: "제약·바이오", codes: ["212", "211", "21100", "21212", "7011", "70113"] },
     ],
   },
 ];
