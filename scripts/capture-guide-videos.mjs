@@ -91,6 +91,13 @@ async function recordClip(name, fn) {
     recordVideo: { dir: tmpDir, size: SIZE },
   });
   await context.addInitScript(CURSOR_INIT_SCRIPT);
+  // 로컬 dev 서버 전용 표시(화면 하단의 Next.js 개발 인디케이터)는 프로덕션에는 없는
+  // UI라 녹화에 들어가면 안 된다 - 캡처 전에 숨긴다.
+  await context.addInitScript(() => {
+    const style = document.createElement("style");
+    style.textContent = "nextjs-portal { display: none !important; }";
+    document.head?.appendChild(style) ?? document.addEventListener("DOMContentLoaded", () => document.head.appendChild(style));
+  });
   const page = await context.newPage();
 
   // 첫 프레임: 페이지가 안정된 직후, 커서/하이라이트가 나타나기 전 상태를 그대로
