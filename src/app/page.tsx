@@ -33,9 +33,10 @@ export default async function Home() {
         <div className="rounded-xl border border-accent/25 bg-accent-soft px-6 py-6">
           <h1 className="text-2xl font-semibold tracking-tight text-foreground">KAM사절차</h1>
           <p className="mt-3 text-zinc-700 dark:text-zinc-300">
-            <strong className="font-semibold text-accent">핵심감사사항(KAM)이란</strong> 감사인이
-            해당 기간 재무제표 감사에서 특히 유의적이라고 판단하여 감사보고서에 별도로 설명하는
-            사항입니다. <strong className="font-semibold text-accent">&lsquo;KAM사절차&rsquo; 서비스는</strong>{" "}
+            <strong className="font-semibold text-accent">핵심감사사항(KAM)이란</strong>{" "}
+            감사인의 전문가적 판단에 따라, 당기 재무제표 감사에서 가장 유의적인 사항으로
+            감사보고서에 별도로 기재하는 사항입니다.{" "}
+            <strong className="font-semibold text-accent">&lsquo;KAM사절차&rsquo; 서비스는</strong>{" "}
             실제 상장사 감사보고서에 실린 KAM 사례를 업종·카테고리별로 모아,
             실무에 참고할 수 있도록 만든 학습 자료입니다. 각 사례는 관련
             감사기준서·회계기준서 원문으로 바로 연결되어 있어, 관련 계정에 대한 업무 수행시 근거
