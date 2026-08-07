@@ -12,11 +12,23 @@ const outDir = path.join(path.dirname(fileURLToPath(import.meta.url)), "..", "pu
 const base = "http://localhost:3000";
 const SIZE = { width: 620, height: 320 };
 const ACCENT = "#d04a02"; // 사이트 accent 주황색과 맞춤
-// 2번(확인) 클립이 끝나는 스크롤 위치 - 관련 기준서 칩이 화면 하단 근처에 보이는 지점.
-// 3번(기준서 이동)이 이 위치에서 그대로 이어서 시작한다. (칩 실제 y좌표 1633px 기준 산출)
-const CHECKLIST_SCROLL_PX = 1350;
 
 const browser = await chromium.launch();
+
+// 2번(확인) 클립이 끝나는 스크롤 위치를 실제 페이지에서 매번 다시 계산한다(하드코딩된
+// 픽셀 값은 페이지 레이아웃이 바뀔 때마다 깨진다 - 예: 회사 바로가기 바가 추가되면서
+// 칩 위치가 1633px에서 2486px로 밀렸던 적이 있었다). 관련 기준서 칩이 화면 하단 근처에
+// 오도록 필요한 스크롤량을 구한다. 3번(기준서 이동)이 이 위치에서 그대로 이어서 시작한다.
+async function computeChecklistScrollPx(url) {
+  const probe = await browser.newPage({ viewport: SIZE });
+  await probe.goto(url, { waitUntil: "networkidle" });
+  const chip = probe.locator('a[href^="/standards/"]').first();
+  await chip.waitFor();
+  const box = await chip.boundingBox();
+  await probe.close();
+  const targetY = SIZE.height - box.height - 40; // 화면 하단에서 40px 여유
+  return Math.max(0, Math.round(box.y - targetY));
+}
 
 // 커서를 화면에 그려주는 스크립트 - 매 페이지 로드마다 자동으로 다시 주입된다.
 const CURSOR_INIT_SCRIPT = () => {
@@ -130,11 +142,20 @@ async function recordClip(name, fn) {
   await warmupPage.close();
 }
 
+const CATEGORY_URL = `${base}/industries/212/%EC%98%81%EC%97%85%EA%B6%8C%20%EC%86%90%EC%83%81`;
+const CHECKLIST_SCROLL_PX = await computeChecklistScrollPx(CATEGORY_URL);
+console.log("계산된 스크롤량:", CHECKLIST_SCROLL_PX, "px");
+
 // 1. 검색: 입력창으로 커서 이동 -> 클릭 -> 타이핑 -> 자동완성 결과로 커서 이동 -> 클릭
 await recordClip("1-search", {
   url: base,
   waitReady: async (page) => {
-    await page.locator('input[name="q"]').waitFor();
+    const input = page.locator('input[name="q"]');
+    await input.waitFor();
+    // 620px 캡처 폭은 Tailwind sm(640px) 미만이라 이용가이드/업종 그리드가 1열로
+    // 쌓이면서 검색창이 화면 훨씬 아래로 밀려난다 - 뷰포트 안으로 스크롤해줘야 한다.
+    await input.evaluate((el) => el.scrollIntoView({ block: "center" }));
+    await page.waitForTimeout(100);
   },
   play: async (page) => {
     const input = page.locator('input[name="q"]');

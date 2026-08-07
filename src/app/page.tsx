@@ -35,7 +35,8 @@ export default async function Home() {
           <p className="mt-3 text-zinc-700 dark:text-zinc-300">
             <strong className="font-semibold text-accent">핵심감사사항(KAM)이란</strong> 감사인이
             해당 기간 재무제표 감사에서 특히 유의적이라고 판단하여 감사보고서에 별도로 설명하는
-            사항입니다. 이 서비스는 실제 상장사 감사보고서에 실린 KAM 사례를 업종·카테고리별로 모아,
+            사항입니다. <strong className="font-semibold text-accent">&lsquo;KAM사절차&rsquo; 서비스는</strong>{" "}
+            실제 상장사 감사보고서에 실린 KAM 사례를 업종·카테고리별로 모아,
             실무에 참고할 수 있도록 만든 학습 자료입니다. 각 사례는 관련
             감사기준서·회계기준서 원문으로 바로 연결되어 있어, 관련 계정에 대한 업무 수행시 근거
             기준까지 함께 확인할 수 있습니다.
