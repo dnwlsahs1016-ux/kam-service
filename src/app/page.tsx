@@ -28,7 +28,7 @@ export default async function Home() {
         </div>
 
         <h2 className="mt-10 text-sm font-medium text-zinc-500 dark:text-zinc-400">
-          혹은 아래 업종에서 직접 확인
+          혹은 업종으로 찾기
         </h2>
         <Link
           href="/industries"
@@ -44,7 +44,7 @@ export default async function Home() {
         </Link>
 
         <h2 className="mt-10 text-sm font-medium text-zinc-500 dark:text-zinc-400">
-          혹은 회계법인별로 확인하기
+          혹은 회계법인으로 찾기
         </h2>
         <Link
           href="/auditors"
