@@ -67,7 +67,7 @@ export function CompanySearch() {
     <div ref={boxRef} className="relative">
       <form
         action="/search"
-        className="flex gap-2"
+        className="flex items-center gap-2 rounded-lg border border-zinc-200 bg-white py-1.5 pl-4 pr-1.5 dark:border-zinc-800 dark:bg-zinc-950"
         onSubmit={() => setOpen(false)}
       >
         <input
@@ -83,11 +83,11 @@ export function CompanySearch() {
           aria-activedescendant={activeIndex >= 0 ? `company-search-option-${activeIndex}` : undefined}
           placeholder="기업이름을 입력하세요"
           autoComplete="off"
-          className="flex-1 rounded-lg border border-zinc-300 px-4 py-2 text-sm outline-none focus:border-accent dark:border-zinc-700 dark:bg-zinc-900"
+          className="flex-1 bg-transparent py-1 text-sm outline-none"
         />
         <button
           type="submit"
-          className="rounded-lg bg-accent px-4 py-2 text-sm font-medium text-accent-foreground"
+          className="shrink-0 rounded-md bg-accent px-4 py-2 text-sm font-medium text-accent-foreground"
         >
           검색
         </button>
