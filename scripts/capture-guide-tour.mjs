@@ -104,7 +104,13 @@ const t0 = Date.now();
 const elapsed = () => (Date.now() - t0) / 1000;
 
 // ── 1. 검색 ──────────────────────────────────────────────
-await page.goto(base);
+// recordVideo는 컨텍스트의 페이지가 생성되는 시점부터 찍힌다 - goto 직후 바로 움직이면
+// 아직 안 끝난 리플로우/폰트 로딩/hydration이 그대로 영상 초반에 찍혀서 화면이 흔들리는
+//것처럼 보인다("첫 부분이 운다"). networkidle까지 기다리고, 폰트 로딩과 약간의 정지
+// 시간을 추가로 둬서 녹화 시작 시점엔 화면이 완전히 안정된 상태이게 한다.
+await page.goto(base, { waitUntil: "networkidle" });
+await page.evaluate(() => document.fonts.ready);
+await page.waitForTimeout(1000);
 const input = page.locator('input[name="q"]');
 await input.waitFor();
 await input.evaluate((el) => el.scrollIntoView({ block: "center" }));

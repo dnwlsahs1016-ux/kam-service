@@ -106,7 +106,13 @@ const t0 = Date.now();
 const elapsed = () => (Date.now() - t0) / 1000;
 
 // ── 1. 회계법인 선택 (홈 -> "회계법인으로 찾기" 버튼 -> /auditors -> 삼정) ──────────
-await page.goto(base);
+// recordVideo는 페이지 생성 시점부터 찍힌다 - goto 직후 바로 움직이면 아직 안 끝난
+// 리플로우/폰트 로딩/hydration이 영상 초반에 그대로 찍혀 화면이 흔들리는 것처럼 보인다.
+// networkidle과 폰트 로딩을 기다리고 1초 정지 시간을 둬서 녹화 시작 시점을 완전히
+// 안정된 상태로 만든다(guide-tour.mjs와 동일한 수정, 실제로 확인해서 검증됨).
+await page.goto(base, { waitUntil: "networkidle" });
+await page.evaluate(() => document.fonts.ready);
+await page.waitForTimeout(1000);
 const auditorsEntryLink = page.locator('a[href="/auditors"]').first();
 await auditorsEntryLink.waitFor();
 await auditorsEntryLink.evaluate((el) => el.scrollIntoView({ block: "center" }));
