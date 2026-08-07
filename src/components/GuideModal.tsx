@@ -117,8 +117,8 @@ export function GuideModal() {
           </svg>
         </span>
         <span className="flex-1">
-          <span className="text-sm font-semibold text-accent">이용 가이드 보러가기</span>
-          <span className="ml-2 text-xs text-zinc-600 dark:text-zinc-400">
+          <span className="block text-sm font-semibold text-accent">이용 가이드 보러가기</span>
+          <span className="mt-0.5 block text-xs text-zinc-600 dark:text-zinc-400">
             검색부터 기준서 확인까지, 화면으로 안내
           </span>
         </span>
