@@ -32,6 +32,17 @@ const CATEGORY_TO_PROCEDURES: Record<string, ProcedureRef[]> = {
       ],
     },
   ],
+  "총계약원가 추정": [
+    {
+      sheetCode: "P",
+      accountName: "매출 및 기타수익",
+      procedures: [
+        "거래형태별 수익인식기준(투입법 등)의 타당성 검토",
+        "총계약원가 추정치의 근거(가정·방법) 및 데이터 신뢰성 검토",
+        "전기 추정치와 당기 실제 발생원가의 비교(소급적 검토)",
+      ],
+    },
+  ],
   "매출채권 회수가능성": [
     {
       sheetCode: "C",

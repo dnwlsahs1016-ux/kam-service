@@ -73,6 +73,7 @@ function ref(standardNo: string, titleOverride?: string): IfrsRef {
 const CATEGORY_TO_IFRS: Record<string, IfrsRef[]> = {
   재고자산평가: [ref("1002")],
   수익인식: [ref("1115")],
+  "총계약원가 추정": [ref("1115", "고객과의 계약에서 생기는 수익(진행기준 투입법)")],
   "매출채권 회수가능성": [ref("1109", "금융상품(기대신용손실)")],
   "영업권 손상": [ref("1103"), ref("1036")],
   "유형·무형자산 손상": [ref("1036"), ref("1016"), ref("1038")],
