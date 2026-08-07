@@ -1,28 +1,7 @@
 import Link from "next/link";
 import { listIndustryGroups } from "@/db/queries";
 import { CompanySearch } from "@/components/CompanySearch";
-import { GuideVideo } from "@/components/GuideVideo";
-
-const GUIDE_STEPS = [
-  {
-    src: "/guide/1-search.webm",
-    poster: "/guide/1-search.png",
-    title: "1. 검색",
-    desc: "기업 이름으로 검색하거나 업종에서 관심 분야를 선택하세요.",
-  },
-  {
-    src: "/guide/2-checklist.webm",
-    poster: "/guide/2-checklist.png",
-    title: "2. 확인",
-    desc: "카테고리별 KAM 사례와 감사절차 체크리스트를 확인하세요.",
-  },
-  {
-    src: "/guide/3-standard.webm",
-    poster: "/guide/3-standard.png",
-    title: "3. 기준서 이동",
-    desc: "관련 기준서를 클릭하면 원문으로 바로 이동합니다.",
-  },
-];
+import { GuideModal } from "@/components/GuideModal";
 
 export default async function Home() {
   const groups = await listIndustryGroups();
@@ -44,27 +23,7 @@ export default async function Home() {
           </p>
         </div>
 
-        <div className="mt-6 rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-950">
-          <h3 className="text-xs font-medium uppercase text-accent/70">
-            이용 가이드
-            <span className="ml-1 normal-case text-zinc-400 dark:text-zinc-500">
-              (화면에 마우스를 올리면 재생됩니다)
-            </span>
-          </h3>
-          <div className="mt-3 grid grid-cols-1 gap-4 sm:grid-cols-3">
-            {GUIDE_STEPS.map((step) => (
-              <div key={step.title}>
-                <div className="overflow-hidden rounded-md border border-zinc-200 dark:border-zinc-800">
-                  <GuideVideo src={step.src} poster={step.poster} className="w-full" />
-                </div>
-                <div className="mt-2 text-sm font-medium text-zinc-700 dark:text-zinc-300">
-                  {step.title}
-                </div>
-                <p className="mt-0.5 text-xs text-zinc-500 dark:text-zinc-400">{step.desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
+        <GuideModal />
 
         <h2 className="mt-10 text-sm font-medium text-zinc-500 dark:text-zinc-400">기업으로 찾기</h2>
         <div className="mt-3">

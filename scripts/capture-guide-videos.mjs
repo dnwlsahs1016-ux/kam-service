@@ -12,7 +12,11 @@ const outDir = path.join(path.dirname(fileURLToPath(import.meta.url)), "..", "pu
 const base = "http://localhost:3000";
 // 31:16 비율 유지하면서 Tailwind sm(640px) 브레이크포인트를 넘겨야 한다 - 그보다 좁으면
 // 홈 화면의 이용가이드/업종 그리드가 모바일용 1~2열로 쌓여서 화면이 완전히 달라 보인다.
-const SIZE = { width: 744, height: 384 };
+// 이용가이드가 홈 화면 작은 썸네일이 아니라 모달에서 크게(최대 672px 폭) 보여지므로,
+// 캡처 해상도가 낮으면 그 안의 페이지 글자가 흐릿하게 확대되어 보인다. 레티나(고밀도)
+// 디스플레이에서도 선명하도록 실제 표시 폭의 2배 이상으로 캡처해서 다운스케일되도록
+// 한다(31:16 비율 유지).
+const SIZE = { width: 1860, height: 960 };
 const ACCENT = "#d04a02"; // 사이트 accent 주황색과 맞춤
 
 const browser = await chromium.launch();
