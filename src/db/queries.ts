@@ -114,15 +114,34 @@ export async function listCompaniesForAuditor(category: AuditorCategory) {
     .where(eq(companyAuditors.category, category))
     .orderBy(companies.corpName);
 
-  const groups = new Map<string, { corpCode: string; corpName: string; adtorName: string }[]>();
+  // 홈 화면 업종 그리드와 같은 대분류-소분류 체계(INDUSTRY_GROUPS)로 묶는다. 그 체계에
+  // 매핑되지 않는 업종코드는 "기타 업종" 대분류 하나로 모은다.
+  type Row = { corpCode: string; corpName: string; adtorName: string };
+  const byMinorLabel = new Map<string, Row[]>();
+  const unmatched: Row[] = [];
   for (const r of rows) {
-    const label = (r.industryCode ? findMinorByCode(r.industryCode)?.label : null) ?? r.industryName ?? "기타 업종";
-    if (!groups.has(label)) groups.set(label, []);
-    groups.get(label)!.push({ corpCode: r.corpCode, corpName: r.corpName, adtorName: r.adtorName });
+    const minor = r.industryCode ? findMinorByCode(r.industryCode) : null;
+    const row = { corpCode: r.corpCode, corpName: r.corpName, adtorName: r.adtorName };
+    if (!minor) {
+      unmatched.push(row);
+      continue;
+    }
+    if (!byMinorLabel.has(minor.label)) byMinorLabel.set(minor.label, []);
+    byMinorLabel.get(minor.label)!.push(row);
   }
-  return [...groups.entries()]
-    .map(([industryLabel, items]) => ({ industryLabel, companies: items }))
-    .sort((a, b) => b.companies.length - a.companies.length);
+
+  const majors = INDUSTRY_GROUPS.map((group) => ({
+    major: group.major,
+    minors: group.items
+      .map((item) => ({ label: item.label, companies: byMinorLabel.get(item.label) ?? [] }))
+      .filter((m) => m.companies.length > 0),
+  })).filter((g) => g.minors.length > 0);
+
+  if (unmatched.length > 0) {
+    majors.push({ major: "기타 업종", minors: [{ label: "기타", companies: unmatched }] });
+  }
+
+  return majors;
 }
 
 export async function searchCompanies(q: string) {

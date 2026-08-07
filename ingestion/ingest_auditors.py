@@ -42,9 +42,18 @@ def main():
     )
     conn.commit()
 
+    # kam_filings만으로는 부족하다 - 회사 상세 페이지(/companies/[corpCode])는
+    # kam_items(Claude 분류까지 끝난 사례)가 하나도 없으면 notFound()를 띄운다. 그래서
+    # 감사인 목록에 노출은 되는데 클릭하면 404가 뜨는 회사가 생기지 않도록, 화면에서
+    # 실제로 쓰는 것과 같은 join 기준(listCasesForCompany와 동일)으로 대상을 좁힌다.
     corp_codes = [
         row[0]
-        for row in conn.execute("SELECT DISTINCT corp_code FROM kam_filings").fetchall()
+        for row in conn.execute(
+            """SELECT DISTINCT kf.corp_code
+               FROM kam_filings kf
+               JOIN kam_raw_items kri ON kri.filing_id = kf.id
+               JOIN kam_items ki ON ki.raw_item_id = kri.id"""
+        ).fetchall()
     ]
     print(f"대상 {len(corp_codes)}개 회사")
 

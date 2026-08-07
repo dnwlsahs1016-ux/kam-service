@@ -1,10 +1,25 @@
 import Link from "next/link";
-import { listIndustryGroups } from "@/db/queries";
+import { listAuditorFirms, listIndustryGroups } from "@/db/queries";
 import { CompanySearch } from "@/components/CompanySearch";
 import { GuideModal } from "@/components/GuideModal";
 
+// 카테고리별로 고정 순서·고정 색을 쓴다(막대 색이 필터링 등으로 다시 칠해지면 안 됨).
+// dataviz 스킬의 검증된 기본 팔레트 슬롯 1~4(블루/오렌지/아쿠아/옐로우)를, 각 법인의 실제
+// 글로벌 브랜드 컬러에 맞춰 배정한다 - 삼일=PwC(오렌지), 삼정=KPMG(블루), 안진=Deloitte(그린
+// 계열), 한영=EY(옐로우). 아주 옅은 배경 채우기로 쓴다(/industries/[industryCode] 페이지의
+// bg-accent-soft 막대와 같은 스타일). 기타는 팔레트 색 대신 중립 회색으로.
+const FIRM_FILL_CLASS: Record<string, string> = {
+  삼일: "bg-[#eb6834]/10 dark:bg-[#d95926]/15",
+  삼정: "bg-[#2a78d6]/10 dark:bg-[#3987e5]/15",
+  안진: "bg-[#1baf7a]/10 dark:bg-[#199e70]/15",
+  한영: "bg-[#eda100]/12 dark:bg-[#c98500]/18",
+  기타: "bg-zinc-200/70 dark:bg-zinc-700/50",
+};
+
 export default async function Home() {
   const groups = await listIndustryGroups();
+  const firms = await listAuditorFirms();
+  const totalFirmCount = firms.reduce((sum, f) => sum + f.count, 0);
 
   return (
     <div className="flex flex-1 flex-col bg-zinc-50 dark:bg-black">
@@ -64,18 +79,32 @@ export default async function Home() {
         <h2 className="mt-10 text-sm font-medium text-zinc-500 dark:text-zinc-400">
           혹은 회계법인별로 확인하기
         </h2>
-        <Link
-          href="/auditors"
-          className="mt-3 flex items-center justify-between rounded-lg border border-zinc-200 bg-white px-4 py-3 hover:border-accent/40 hover:bg-accent-soft dark:border-zinc-800 dark:bg-zinc-950 dark:hover:bg-zinc-900"
-        >
-          <span>
-            <span className="text-sm font-medium">4대 회계법인 + 로컬로 나눠보기</span>
-            <span className="ml-2 text-xs text-zinc-500 dark:text-zinc-400">
-              삼일 · 삼정 · 안진 · 한영 · 기타
-            </span>
-          </span>
-          <span className="text-accent">→</span>
-        </Link>
+        <div className="mt-3 divide-y divide-zinc-200 overflow-hidden rounded-lg border border-zinc-200 dark:divide-zinc-800 dark:border-zinc-800">
+          {firms.map((firm) => {
+            const pct = totalFirmCount > 0 ? Math.round((firm.count / totalFirmCount) * 1000) / 10 : 0;
+            return (
+              <Link
+                key={firm.category}
+                href={`/auditors/${firm.category}`}
+                className="relative flex items-center justify-between overflow-hidden bg-white px-4 py-4 hover:bg-black/[0.02] dark:bg-zinc-950 dark:hover:bg-white/[0.03]"
+              >
+                <div
+                  className={`absolute inset-y-0 left-0 ${FIRM_FILL_CLASS[firm.category]}`}
+                  style={{ width: `${pct}%` }}
+                  aria-hidden
+                />
+                <span className="relative font-medium">{firm.category}</span>
+                <span className="relative text-sm text-zinc-500 dark:text-zinc-400">
+                  {firm.count}건 · {pct}%
+                </span>
+              </Link>
+            );
+          })}
+        </div>
+        <p className="mt-2 text-xs text-zinc-400 dark:text-zinc-500">
+          2026년 1분기보고서 기준 현재 감사인입니다. 4대 회계법인(삼일·삼정·안진·한영) 외에는
+          &lsquo;기타&rsquo;로 묶어서 보여줍니다.
+        </p>
       </main>
     </div>
   );
