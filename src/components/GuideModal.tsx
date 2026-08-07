@@ -38,6 +38,10 @@ export function GuideModal() {
   const [guideIndex, setGuideIndex] = useState(0);
   const [step, setStep] = useState(0);
   const [readyFlags, setReadyFlags] = useState<boolean[]>(() => GUIDES.map(() => false));
+  // "재생 준비 끝(readyFlags)"과 "지금 실제로 재생 중"은 다르다 - 크롬이 절전으로
+  // 강제 정지시키는 경합 때문에 준비는 끝났는데 몇백ms~1초 정지 상태로 머무는 경우가
+  // 있다. 그 구간엔 빈 화면 대신 로딩 표시를 보여준다.
+  const [playingFlags, setPlayingFlags] = useState<boolean[]>(() => GUIDES.map(() => false));
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
   // ref 콜백을 렌더마다 새로 만들면(인라인 화살표 함수) React가 매 렌더마다 null ->
   // 엘리먼트로 다시 붙인다 - onTimeUpdate가 초당 여러 번 setStep을 호출해 리렌더가
@@ -51,6 +55,18 @@ export function GuideModal() {
   }
 
   const guide = GUIDES[guideIndex];
+
+  // 크롬은 "숨겨진(visibility:hidden) muted 무음 영상"을 절전을 위해 자동으로 멈춘다 -
+  // 탭을 바꿔서 방금 숨김 해제된 영상에 play()를 걸면 그 자동정지와 경합해서
+  // "AbortError: ...paused to save power"로 재생이 씹히는 경우가 있다. 실패하면 다음
+  // 프레임에 한 번 더 시도한다.
+  function safePlay(v: HTMLVideoElement) {
+    v.play().catch(() => {
+      requestAnimationFrame(() => {
+        v.play().catch(() => {});
+      });
+    });
+  }
 
   useEffect(() => {
     if (!open) return;
@@ -72,7 +88,7 @@ export function GuideModal() {
     const v = videoRefs.current[guideIndex];
     if (v && readyFlags[guideIndex]) {
       v.currentTime = 0;
-      v.play();
+      safePlay(v);
     }
     // 비활성 탭 영상은 멈춰서 리소스를 아낀다.
     videoRefs.current.forEach((el, i) => {
@@ -87,7 +103,7 @@ export function GuideModal() {
   useEffect(() => {
     const v = videoRefs.current[guideIndex];
     if (v && readyFlags[guideIndex] && v.paused) {
-      v.play().catch(() => {});
+      safePlay(v);
     }
   }, [guideIndex, readyFlags]);
 
@@ -161,22 +177,20 @@ export function GuideModal() {
             <div className="relative aspect-[31/16] bg-zinc-100 dark:bg-zinc-900">
               {GUIDES.map((g, i) => {
                 const active = i === guideIndex;
-                const isReady = readyFlags[i];
+                const isPlaying = playingFlags[i];
                 return (
-                  <div
-                    key={g.key}
-                    className="absolute inset-0"
-                    style={{ display: active ? "block" : "none" }}
-                  >
+                  <div key={g.key} className="absolute inset-0">
                     <img
                       src={g.poster}
                       alt=""
                       className="absolute inset-0 h-full w-full object-cover"
-                      style={{ visibility: isReady ? "hidden" : "visible" }}
+                      style={{ visibility: active && !isPlaying ? "visible" : "hidden" }}
                     />
-                    {active && !isReady && (
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <div className="h-8 w-8 animate-spin rounded-full border-2 border-accent/30 border-t-accent" />
+                    {active && !isPlaying && (
+                      <div className="absolute inset-0 flex items-center justify-center gap-1.5">
+                        <span className="h-2.5 w-2.5 animate-bounce rounded-full bg-accent [animation-delay:-0.3s]" />
+                        <span className="h-2.5 w-2.5 animate-bounce rounded-full bg-accent [animation-delay:-0.15s]" />
+                        <span className="h-2.5 w-2.5 animate-bounce rounded-full bg-accent" />
                       </div>
                     )}
                     <video
@@ -187,7 +201,7 @@ export function GuideModal() {
                       playsInline
                       preload="auto"
                       className="absolute inset-0 h-full w-full object-cover"
-                      style={{ visibility: isReady ? "visible" : "hidden" }}
+                      style={{ visibility: active && isPlaying ? "visible" : "hidden" }}
                       onCanPlayThrough={() => {
                         setReadyFlags((prev) => {
                           if (prev[i]) return prev;
@@ -195,7 +209,33 @@ export function GuideModal() {
                           next[i] = true;
                           return next;
                         });
-                        if (i === guideIndex) videoRefs.current[i]?.play();
+                        if (i === guideIndex) {
+                          const el = videoRefs.current[i];
+                          if (el) safePlay(el);
+                        }
+                      }}
+                      onPlay={() => {
+                        setPlayingFlags((prev) => {
+                          if (prev[i]) return prev;
+                          const next = [...prev];
+                          next[i] = true;
+                          return next;
+                        });
+                      }}
+                      onPause={() => {
+                        setPlayingFlags((prev) => {
+                          if (!prev[i]) return prev;
+                          const next = [...prev];
+                          next[i] = false;
+                          return next;
+                        });
+                        // 크롬이 절전을 이유로 강제로 멈췄는데 이게 여전히 활성 탭 영상이면
+                        // 다시 재생을 건다 - 붙었다 떨어지는 경합을 이 핸들러가 계속
+                        // 감시하면서 이겨낸다. 그동안은 위 로딩 표시가 대신 보인다.
+                        if (i === guideIndex && open) {
+                          const el = videoRefs.current[i];
+                          if (el) safePlay(el);
+                        }
                       }}
                       onTimeUpdate={() => {
                         if (i !== guideIndex) return;
