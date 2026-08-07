@@ -39,6 +39,16 @@ export function GuideModal() {
   const [step, setStep] = useState(0);
   const [readyFlags, setReadyFlags] = useState<boolean[]>(() => GUIDES.map(() => false));
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
+  // ref 콜백을 렌더마다 새로 만들면(인라인 화살표 함수) React가 매 렌더마다 null ->
+  // 엘리먼트로 다시 붙인다 - onTimeUpdate가 초당 여러 번 setStep을 호출해 리렌더가
+  // 잦은 상황이라 이 churn이 재생 상태에 영향을 줄 수 있어, 인덱스별 콜백을 한 번만
+  // 만들어 고정한다.
+  const refCallbacksRef = useRef<Array<(el: HTMLVideoElement | null) => void>>([]);
+  if (refCallbacksRef.current.length !== GUIDES.length) {
+    refCallbacksRef.current = GUIDES.map((_, i) => (el: HTMLVideoElement | null) => {
+      videoRefs.current[i] = el;
+    });
+  }
 
   const guide = GUIDES[guideIndex];
 
@@ -70,6 +80,16 @@ export function GuideModal() {
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [guideIndex]);
+
+  // onCanPlayThrough 안에서의 play() 호출이 타이밍상 씹히는 경우가 있어서(예: 이벤트
+  // 발생 시점에 아직 다른 렌더가 진행 중이던 경우), readyFlags가 바뀔 때마다 활성 탭
+  // 영상이 준비됐는데 멈춰있으면 다시 재생을 시도하는 안전망을 둔다.
+  useEffect(() => {
+    const v = videoRefs.current[guideIndex];
+    if (v && readyFlags[guideIndex] && v.paused) {
+      v.play().catch(() => {});
+    }
+  }, [guideIndex, readyFlags]);
 
   function seekToStep(i: number) {
     const v = videoRefs.current[guideIndex];
@@ -160,9 +180,7 @@ export function GuideModal() {
                       </div>
                     )}
                     <video
-                      ref={(el) => {
-                        videoRefs.current[i] = el;
-                      }}
+                      ref={refCallbacksRef.current[i]}
                       src={g.src}
                       muted
                       loop
