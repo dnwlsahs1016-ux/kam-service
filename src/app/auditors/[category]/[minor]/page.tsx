@@ -46,7 +46,7 @@ export default async function AuditorMinorPage({
           ))}
         </ul>
         <p className="mt-4 text-xs text-zinc-400 dark:text-zinc-500">
-          여기 묶인 감사인은 2026년 1분기보고서 기준입니다. 회사별 KAM 사례는 2022~2025년
+          표시된 감사인은 2026년 1분기보고서 기준입니다. 회사별 KAM 사례는 2022~2025년
           감사보고서에서 가져온 것이라, 그 사례의 실제 감사인은 지금과 다를 수 있습니다.
         </p>
       </main>
