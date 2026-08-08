@@ -31,7 +31,10 @@ def categorize(adtor_name: str) -> str:
 
 
 _TR_RE = re.compile(r"<TR[^>]*>(.*?)</TR>", re.S)
-_TD_RE = re.compile(r"<TD[^>]*>(.*?)</TD>", re.S)
+# 표 데이터 셀 태그가 문서 종류마다 다르다 - <TD>뿐 아니라 <TE>(수정가능 텍스트),
+# <TU>(단위값)도 쓰인다(예: 연차 감사보고서의 "회계감사인의 명칭" 표는 감사인 칸에 <TE>를
+# 쓴다 - <TD>만 잡으면 그 칸이 통째로 빠져서 옆 칸과 인덱스가 밀린다).
+_TD_RE = re.compile(r"<T[DEU][^>]*>(.*?)</T[DEU]>", re.S)
 _TAG_RE = re.compile(r"<[^>]+>")
 _CURRENT_PERIOD_RE = re.compile(r"\((당기|당분기|당반기)\)")
 

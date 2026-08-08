@@ -20,7 +20,9 @@ const local = new Database(path.join(path.dirname(fileURLToPath(import.meta.url)
 const turso = createClient({ url: TURSO_URL, authToken: TURSO_TOKEN });
 
 const rows = local
-  .prepare("SELECT corp_code, bsns_year, reprt_code, adtor_name, category FROM company_auditors")
+  .prepare(
+    "SELECT corp_code, bsns_year, reprt_code, adtor_name, category, prior_adtor_name FROM company_auditors"
+  )
   .all();
 
 let inserted = 0;
@@ -32,14 +34,14 @@ for (const r of rows) {
   });
   if (existing.rows.length === 0) {
     await turso.execute({
-      sql: "INSERT INTO company_auditors (corp_code, bsns_year, reprt_code, adtor_name, category) VALUES (?, ?, ?, ?, ?)",
-      args: [r.corp_code, r.bsns_year, r.reprt_code, r.adtor_name, r.category],
+      sql: "INSERT INTO company_auditors (corp_code, bsns_year, reprt_code, adtor_name, category, prior_adtor_name) VALUES (?, ?, ?, ?, ?, ?)",
+      args: [r.corp_code, r.bsns_year, r.reprt_code, r.adtor_name, r.category, r.prior_adtor_name ?? null],
     });
     inserted++;
   } else {
     await turso.execute({
-      sql: "UPDATE company_auditors SET bsns_year=?, reprt_code=?, adtor_name=?, category=? WHERE corp_code=?",
-      args: [r.bsns_year, r.reprt_code, r.adtor_name, r.category, r.corp_code],
+      sql: "UPDATE company_auditors SET bsns_year=?, reprt_code=?, adtor_name=?, category=?, prior_adtor_name=? WHERE corp_code=?",
+      args: [r.bsns_year, r.reprt_code, r.adtor_name, r.category, r.prior_adtor_name ?? null, r.corp_code],
     });
     updated++;
   }

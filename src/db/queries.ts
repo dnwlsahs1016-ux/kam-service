@@ -124,6 +124,7 @@ export async function listCompaniesForAuditor(category: AuditorCategory) {
       industryCode: companies.industryCode,
       industryName: companies.industryName,
       adtorName: companyAuditors.adtorName,
+      priorAdtorName: companyAuditors.priorAdtorName,
     })
     .from(companyAuditors)
     .innerJoin(companies, eq(companies.corpCode, companyAuditors.corpCode))
@@ -132,12 +133,17 @@ export async function listCompaniesForAuditor(category: AuditorCategory) {
 
   // 홈 화면 업종 그리드와 같은 대분류-소분류 체계(INDUSTRY_GROUPS)로 묶는다. 그 체계에
   // 매핑되지 않는 업종코드는 "기타 업종" 대분류 하나로 모은다.
-  type Row = { corpCode: string; corpName: string; adtorName: string };
+  type Row = { corpCode: string; corpName: string; adtorName: string; priorAdtorName: string | null };
   const byMinorLabel = new Map<string, Row[]>();
   const unmatched: Row[] = [];
   for (const r of rows) {
     const minor = r.industryCode ? findMinorByCode(r.industryCode) : null;
-    const row = { corpCode: r.corpCode, corpName: r.corpName, adtorName: r.adtorName };
+    const row = {
+      corpCode: r.corpCode,
+      corpName: r.corpName,
+      adtorName: r.adtorName,
+      priorAdtorName: r.priorAdtorName,
+    };
     if (!minor) {
       unmatched.push(row);
       continue;

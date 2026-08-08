@@ -20,7 +20,7 @@ const GUIDES = [
   },
   {
     key: "industry",
-    label: "업종에서 찾기",
+    label: "업종으로 찾기",
     src: "/guide/guide-tour-industry.mp4",
     stepBoundaries: [0, 8.817, 12.183],
     steps: [

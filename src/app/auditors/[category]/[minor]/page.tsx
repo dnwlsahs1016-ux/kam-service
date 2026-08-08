@@ -51,10 +51,14 @@ export default async function AuditorMinorPage({
             <li key={c.corpCode} className="w-[calc(50%-0.375rem)] sm:w-[calc(33.333%-0.5rem)]">
               <Link
                 href={`/companies/${c.corpCode}`}
-                className={`flex h-full flex-col rounded-lg border border-zinc-200 bg-white px-3 py-3 dark:border-zinc-800 dark:bg-zinc-950 ${colors.hoverBg}`}
+                className={`flex h-full flex-col items-center justify-center gap-1 rounded-lg border border-zinc-200 bg-white px-3 py-3 text-center dark:border-zinc-800 dark:bg-zinc-950 ${colors.hoverBg}`}
               >
                 <span className="text-sm font-medium">{c.corpName}</span>
-                <span className="mt-0.5 text-xs text-zinc-500 dark:text-zinc-400">{c.adtorName}</span>
+                {c.priorAdtorName && c.priorAdtorName !== c.adtorName && (
+                  <span className="inline-flex w-fit items-center rounded-full bg-amber-50 px-1.5 py-0.5 text-[10px] font-medium text-amber-700 dark:bg-amber-950/40 dark:text-amber-400">
+                    감사인변경({c.priorAdtorName.replace(/회계법인$/, "")}→{c.adtorName.replace(/회계법인$/, "")})
+                  </span>
+                )}
               </Link>
             </li>
           ))}

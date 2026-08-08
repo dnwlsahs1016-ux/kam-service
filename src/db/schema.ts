@@ -41,6 +41,7 @@ export const companyAuditors = sqliteTable(
     reprtCode: text("reprt_code").notNull(), // DART reprt_code, e.g. "11013"(1분기보고서)
     adtorName: text("adtor_name").notNull(), // DART 원문 그대로, 예: "삼정회계법인"
     category: text("category", { enum: ["삼일", "삼정", "안진", "한영", "기타"] }).notNull(),
+    priorAdtorName: text("prior_adtor_name"), // 이 회사 가장 최근 KAM 사례 연도의 감사인 - adtorName과 다르면 감사인이 바뀐 것. 못 찾으면 null.
   },
   (t) => [index("company_auditors_category_idx").on(t.category)]
 );
