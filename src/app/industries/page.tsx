@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { listIndustryGroups } from "@/db/queries";
 
+export const revalidate = 3600; // ingestion만 데이터를 바꾼다 - 매 요청 Turso 왕복 대신 1시간 캐시
+
 export default async function IndustriesPage() {
   const groups = await listIndustryGroups();
 

@@ -2,6 +2,8 @@ import { notFound } from "next/navigation";
 import { getAllStandardCodes, getStandard } from "@/db/queries";
 import { StandardParagraphText } from "@/components/StandardParagraph";
 
+export const revalidate = 3600; // ingestion만 데이터를 바꾼다 - 매 요청 Turso 왕복 대신 1시간 캐시
+
 export default async function StandardPage({
   params,
 }: {

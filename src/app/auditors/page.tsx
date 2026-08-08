@@ -2,6 +2,8 @@ import Link from "next/link";
 import { listAuditorFirms } from "@/db/queries";
 import { AUDITOR_COLORS } from "@/lib/auditorColors";
 
+export const revalidate = 3600; // ingestion만 데이터를 바꾼다 - 매 요청 Turso 왕복 대신 1시간 캐시
+
 export default async function AuditorsPage() {
   const firms = await listAuditorFirms();
   const totalFirmCount = firms.reduce((sum, f) => sum + f.count, 0);

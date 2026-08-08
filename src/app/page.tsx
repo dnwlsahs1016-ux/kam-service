@@ -2,6 +2,8 @@ import Link from "next/link";
 import { CompanySearch } from "@/components/CompanySearch";
 import { GuideModal } from "@/components/GuideModal";
 
+export const revalidate = 3600; // ingestion만 데이터를 바꾼다 - 매 요청 Turso 왕복 대신 1시간 캐시
+
 export default async function Home() {
   return (
     <div className="flex flex-1 flex-col bg-zinc-50 dark:bg-black">

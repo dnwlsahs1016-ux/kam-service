@@ -5,6 +5,8 @@ import { dartMainReportUrl } from "@/lib/dart";
 import { findMinorByCodesParam } from "@/lib/industryGroups";
 import { classifyOther } from "@/lib/otherSubcategories";
 
+export const revalidate = 3600; // ingestion만 데이터를 바꾼다 - 매 요청 Turso 왕복 대신 1시간 캐시
+
 type Case = Awaited<ReturnType<typeof listCasesForCategory>>[number];
 
 function groupByCompany(cases: Case[]) {

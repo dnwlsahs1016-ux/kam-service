@@ -3,6 +3,8 @@ import { notFound } from "next/navigation";
 import { listCategoriesForIndustry } from "@/db/queries";
 import { findMinorByCodesParam } from "@/lib/industryGroups";
 
+export const revalidate = 3600; // ingestion만 데이터를 바꾼다 - 매 요청 Turso 왕복 대신 1시간 캐시
+
 export default async function IndustryPage({
   params,
 }: {
