@@ -43,7 +43,7 @@ export default async function AuditorMinorPage({
         <h1 className="mt-2 text-2xl font-semibold tracking-tight">{minor.label}</h1>
         <p className="mt-2 text-zinc-600 dark:text-zinc-400">
           {major.major}업종에서 {category === "기타" ? "4대 회계법인 외 회계법인" : `${category}회계법인`}이 26년
-          1분기 현재(사업보고서상) 감사인인 회사 {minor.companies.length}곳입니다.
+          1분기 현재(분기보고서상) 감사인인 회사 {minor.companies.length}곳입니다.
         </p>
 
         <ul className="mt-6 flex flex-wrap gap-3">
@@ -55,7 +55,7 @@ export default async function AuditorMinorPage({
               >
                 <span className="text-sm font-medium">{c.corpName}</span>
                 {c.priorAdtorName && c.priorAdtorName !== c.adtorName && (
-                  <span className="inline-flex w-fit items-center rounded-full bg-amber-50 px-1.5 py-0.5 text-[10px] font-medium text-amber-700 dark:bg-amber-950/40 dark:text-amber-400">
+                  <span className={`inline-flex w-fit items-center rounded-full px-1.5 py-0.5 text-[10px] font-medium ${colors.fill} ${colors.text}`}>
                     감사인변경({c.priorAdtorName.replace(/회계법인$/, "")}→{c.adtorName.replace(/회계법인$/, "")})
                   </span>
                 )}
