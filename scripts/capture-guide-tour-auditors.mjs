@@ -87,8 +87,9 @@ await page.waitForSelector('a[href^="/companies/"]');
 await page.waitForTimeout(870);
 
 // ── 3. 회사 확인 (KAM 상세 페이지로 이동) ──────────────────────
+// 제주은행: 삼정 -> 삼일로 감사인이 바뀐 회사라 "감사인변경" 배지가 실제로 보인다.
 const t2 = elapsed();
-const companyLink = page.locator('a[href^="/companies/"]').first();
+const companyLink = page.locator('a[href^="/companies/"]', { hasText: "제주은행" }).first();
 await companyLink.evaluate((el) => el.scrollIntoView({ block: "center" }));
 await page.waitForTimeout(435);
 const companyBox = await companyLink.boundingBox();

@@ -33,7 +33,7 @@ const GUIDES = [
     key: "auditors",
     label: "회계법인으로 찾기",
     src: "/guide/guide-tour-auditors.mp4",
-    stepBoundaries: [0, 7.45, 10.602],
+    stepBoundaries: [0, 7.509, 10.574],
     steps: [
       { title: "1. 회계법인 선택", desc: "홈에서 회계법인으로 찾기를 눌러 관심 있는 회계법인을 선택하세요." },
       { title: "2. 업종 선택", desc: "그 법인이 감사인인 회사를 업종별로 확인하세요." },
