@@ -17,24 +17,40 @@ function resolveIfrsRefs(category: string, ifrsRefsJson: string | null): IfrsRef
 }
 
 export async function listIndustryGroups() {
-  const groups = [];
-  for (const group of INDUSTRY_GROUPS) {
-    const items = [];
-    for (const item of group.items) {
-      const row = await db
-        .select({
-          kamCount: sql<number>`count(distinct ${kamItems.id})`,
-          companyCount: sql<number>`count(distinct ${companies.corpCode})`,
-        })
-        .from(companies)
-        .innerJoin(kamFilings, eq(kamFilings.corpCode, companies.corpCode))
-        .innerJoin(kamRawItems, eq(kamRawItems.filingId, kamFilings.id))
-        .innerJoin(kamItems, eq(kamItems.rawItemId, kamRawItems.id))
-        .where(inArray(companies.industryCode, item.codes));
-      items.push({ ...item, kamCount: row[0]?.kamCount ?? 0, companyCount: row[0]?.companyCount ?? 0 });
-    }
-    groups.push({ major: group.major, items: items.filter((i) => i.kamCount > 0) });
-  }
+  // 예전엔 소분류(15개)마다 DB 쿼리를 하나씩 순차로 날렸다(N+1) - Turso는 원격 DB라 왕복
+  // 지연이 쿼리 수만큼 그대로 쌓여서 이 페이지만 유독 느렸다. industryCode별 집계를 한
+  // 쿼리로 가져온 뒤, 소분류 하나엔 서로 겹치지 않는 code가 여러 개 묶여 있을 뿐이므로
+  // (회사는 industryCode를 하나만 가진다) JS에서 코드별 집계를 그대로 합산한다.
+  const allCodes = INDUSTRY_GROUPS.flatMap((group) => group.items.flatMap((item) => item.codes));
+  const rows = await db
+    .select({
+      industryCode: companies.industryCode,
+      kamCount: sql<number>`count(distinct ${kamItems.id})`,
+      companyCount: sql<number>`count(distinct ${companies.corpCode})`,
+    })
+    .from(companies)
+    .innerJoin(kamFilings, eq(kamFilings.corpCode, companies.corpCode))
+    .innerJoin(kamRawItems, eq(kamRawItems.filingId, kamFilings.id))
+    .innerJoin(kamItems, eq(kamItems.rawItemId, kamRawItems.id))
+    .where(inArray(companies.industryCode, allCodes))
+    .groupBy(companies.industryCode);
+  const countsByCode = new Map(rows.map((r) => [r.industryCode, r]));
+
+  const groups = INDUSTRY_GROUPS.map((group) => {
+    const items = group.items.map((item) => {
+      let kamCount = 0;
+      let companyCount = 0;
+      for (const code of item.codes) {
+        const c = countsByCode.get(code);
+        if (c) {
+          kamCount += c.kamCount;
+          companyCount += c.companyCount;
+        }
+      }
+      return { ...item, kamCount, companyCount };
+    });
+    return { major: group.major, items: items.filter((i) => i.kamCount > 0) };
+  });
   return groups.filter((g) => g.items.length > 0);
 }
 
