@@ -1,9 +1,14 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { isAuditorCategory, listCompaniesForAuditor } from "@/db/queries";
+import { isAuditorCategory, listAuditorFirms, listCompaniesForAuditor } from "@/db/queries";
 import { AUDITOR_COLORS } from "@/lib/auditorColors";
 
 export const revalidate = 3600; // ingestion만 데이터를 바꾼다 - 매 요청 Turso 왕복 대신 1시간 캐시
+
+export async function generateStaticParams() {
+  const firms = await listAuditorFirms();
+  return firms.map((f) => ({ category: f.category }));
+}
 
 export default async function AuditorCategoryPage({
   params,

@@ -1,9 +1,21 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { isAuditorCategory, listCompaniesForAuditor } from "@/db/queries";
+import { isAuditorCategory, listAuditorFirms, listCompaniesForAuditor } from "@/db/queries";
 import { AUDITOR_COLORS } from "@/lib/auditorColors";
 
 export const revalidate = 3600; // ingestion만 데이터를 바꾼다 - 매 요청 Turso 왕복 대신 1시간 캐시
+
+export async function generateStaticParams() {
+  const firms = await listAuditorFirms();
+  const params: { category: string; minor: string }[] = [];
+  for (const f of firms) {
+    const majors = await listCompaniesForAuditor(f.category);
+    for (const major of majors) {
+      for (const minor of major.minors) params.push({ category: f.category, minor: minor.label });
+    }
+  }
+  return params;
+}
 
 export default async function AuditorMinorPage({
   params,

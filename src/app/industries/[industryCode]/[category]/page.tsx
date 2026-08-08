@@ -1,11 +1,22 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getStandardTitles, listCasesForCategory } from "@/db/queries";
+import { getStandardTitles, listCasesForCategory, listCategoriesForIndustry } from "@/db/queries";
 import { dartMainReportUrl } from "@/lib/dart";
-import { findMinorByCodesParam } from "@/lib/industryGroups";
+import { findMinorByCodesParam, INDUSTRY_GROUPS } from "@/lib/industryGroups";
 import { classifyOther } from "@/lib/otherSubcategories";
 
 export const revalidate = 3600; // ingestion만 데이터를 바꾼다 - 매 요청 Turso 왕복 대신 1시간 캐시
+
+export async function generateStaticParams() {
+  const params: { industryCode: string; category: string }[] = [];
+  for (const group of INDUSTRY_GROUPS) {
+    for (const item of group.items) {
+      const categories = await listCategoriesForIndustry(item.codes);
+      for (const c of categories) params.push({ industryCode: item.codes.join(","), category: c.category });
+    }
+  }
+  return params;
+}
 
 type Case = Awaited<ReturnType<typeof listCasesForCategory>>[number];
 

@@ -160,6 +160,17 @@ export async function listCompaniesForAuditor(category: AuditorCategory) {
   return majors;
 }
 
+// generateStaticParams용 - KAM 데이터가 있는 전체 회사 코드.
+export async function listAllCompanyCodes() {
+  const rows = await db
+    .selectDistinct({ corpCode: companies.corpCode })
+    .from(companies)
+    .innerJoin(kamFilings, eq(kamFilings.corpCode, companies.corpCode))
+    .innerJoin(kamRawItems, eq(kamRawItems.filingId, kamFilings.id))
+    .innerJoin(kamItems, eq(kamItems.rawItemId, kamRawItems.id));
+  return rows.map((r) => r.corpCode);
+}
+
 export async function searchCompanies(q: string) {
   if (!q.trim()) return [];
   const rows = await db

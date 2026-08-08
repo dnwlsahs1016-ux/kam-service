@@ -1,10 +1,20 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getCompanyName, getStandardTitles, listCasesForCompany } from "@/db/queries";
+import {
+  getCompanyName,
+  getStandardTitles,
+  listAllCompanyCodes,
+  listCasesForCompany,
+} from "@/db/queries";
 import { dartMainReportUrl } from "@/lib/dart";
 import { codesParamForCode, findMinorByCode } from "@/lib/industryGroups";
 
 export const revalidate = 3600; // ingestion만 데이터를 바꾼다 - 매 요청 Turso 왕복 대신 1시간 캐시
+
+export async function generateStaticParams() {
+  const codes = await listAllCompanyCodes();
+  return codes.map((corpCode) => ({ corpCode }));
+}
 
 export default async function CompanyPage({
   params,
