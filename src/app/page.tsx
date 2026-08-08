@@ -35,8 +35,8 @@ export default async function Home() {
           className="mt-3 flex items-center justify-between rounded-lg border border-zinc-200 bg-white px-4 py-3 hover:border-accent/40 hover:bg-accent-soft dark:border-zinc-800 dark:bg-zinc-950 dark:hover:bg-zinc-900"
         >
           <span>
-            <span className="text-sm font-medium">업종별로 확인하러 가기</span>
-            <span className="ml-2 text-xs text-zinc-500 dark:text-zinc-400">
+            <span className="block text-sm font-medium">업종별로 확인하러 가기</span>
+            <span className="mt-0.5 block text-xs text-zinc-500 dark:text-zinc-400">
               금융 · 소비재 · 인프라 · 전자통신 · 제조업
             </span>
           </span>
@@ -51,8 +51,8 @@ export default async function Home() {
           className="mt-3 flex items-center justify-between rounded-lg border border-zinc-200 bg-white px-4 py-3 hover:border-accent/40 hover:bg-accent-soft dark:border-zinc-800 dark:bg-zinc-950 dark:hover:bg-zinc-900"
         >
           <span>
-            <span className="text-sm font-medium">회계법인별로 확인하러 가기</span>
-            <span className="ml-2 text-xs text-zinc-500 dark:text-zinc-400">
+            <span className="block text-sm font-medium">회계법인별로 확인하러 가기</span>
+            <span className="mt-0.5 block text-xs text-zinc-500 dark:text-zinc-400">
               삼일 · 삼정 · 안진 · 한영 · 기타
             </span>
           </span>
