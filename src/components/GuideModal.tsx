@@ -46,10 +46,9 @@ export function GuideModal() {
   const [open, setOpen] = useState(false);
   const [guideIndex, setGuideIndex] = useState(0);
   const [step, setStep] = useState(0);
-  const [readyFlags, setReadyFlags] = useState<boolean[]>(() => GUIDES.map(() => false));
-  // "재생 준비 끝(readyFlags)"과 "지금 실제로 재생 중"은 다르다 - 크롬이 절전으로
-  // 강제 정지시키는 경합 때문에 준비는 끝났는데 몇백ms~1초 정지 상태로 머무는 경우가
-  // 있다. 그 구간엔 빈 화면 대신 로딩 표시를 보여준다.
+  // "재생 준비 끝"과 "지금 실제로 재생 중"은 다르다 - 크롬이 절전으로 강제 정지시키는
+  // 경합 때문에 준비는 끝났는데 몇백ms~1초 정지 상태로 머무는 경우가 있다. 그 구간엔
+  // 빈 화면 대신 로딩 표시를 보여준다.
   const [playingFlags, setPlayingFlags] = useState<boolean[]>(() => GUIDES.map(() => false));
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
   // ref 콜백을 렌더마다 새로 만들면(인라인 화살표 함수) React가 매 렌더마다 null ->
@@ -200,12 +199,6 @@ export function GuideModal() {
                       className="absolute inset-0 h-full w-full object-cover"
                       style={{ visibility: active && isPlaying ? "visible" : "hidden" }}
                       onCanPlayThrough={() => {
-                        setReadyFlags((prev) => {
-                          if (prev[i]) return prev;
-                          const next = [...prev];
-                          next[i] = true;
-                          return next;
-                        });
                         if (i === guideIndex) {
                           const el = videoRefs.current[i];
                           if (el) safePlay(el);

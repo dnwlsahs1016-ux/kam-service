@@ -1,10 +1,12 @@
+import type { AuditorCategory } from "@/db/queries";
+
 // 회계법인별 고정 순서·고정 색. dataviz 스킬의 검증된 기본 팔레트 슬롯 1~4(블루/오렌지/
 // 아쿠아/옐로우)를 각 법인의 실제 글로벌 브랜드 컬러에 맞춰 배정한다 - 삼일=PwC(오렌지),
 // 삼정=KPMG(블루), 안진=Deloitte(그린 계열), 한영=EY(옐로우). 기타는 브랜드가 없으니 중립
 // 회색. /auditors 하위 페이지 전체(목록 막대, 대분류 헤더, hover, 링크)가 이 값을 함께
 // 쓴다 - 법인 페이지를 들어가면 그 법인 색으로 화면 톤이 바뀌도록.
-export const AUDITOR_ORDER = ["삼일", "삼정", "안진", "한영", "기타"] as const;
-export type AuditorCategory = (typeof AUDITOR_ORDER)[number];
+// AuditorCategory 타입은 db/queries.ts의 AUDITOR_ORDER가 원본이다(여기서 다시 선언하면
+// 카테고리 5개 값이 두 파일에 따로 존재하게 된다).
 
 type AuditorColorSet = {
   fill: string; // 아주 옅은 배경 채우기 (막대, 헤더 배경)
