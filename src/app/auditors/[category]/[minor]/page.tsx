@@ -42,8 +42,8 @@ export default async function AuditorMinorPage({
         </Link>
         <h1 className="mt-2 text-2xl font-semibold tracking-tight">{minor.label}</h1>
         <p className="mt-2 text-zinc-600 dark:text-zinc-400">
-          {major.major} · {category === "기타" ? "4대 회계법인 외 회계법인" : `${category}회계법인`}이
-          현재 감사인인 회사 {minor.companies.length}곳입니다.
+          {major.major}업종에서 {category === "기타" ? "4대 회계법인 외 회계법인" : `${category}회계법인`}이 26년
+          1분기 현재(사업보고서상) 감사인인 회사 {minor.companies.length}곳입니다.
         </p>
 
         <ul className="mt-6 flex flex-wrap gap-3">
