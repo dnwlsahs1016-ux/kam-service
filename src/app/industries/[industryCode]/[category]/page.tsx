@@ -74,7 +74,7 @@ export default async function CategoryPage({
 
   return (
     <div className="flex flex-1 flex-col bg-zinc-50 dark:bg-black">
-      <main className="mx-auto w-full max-w-3xl flex-1 px-6 py-16">
+      <main className="mx-auto w-full max-w-3xl flex-1 px-6 pt-10 pb-16">
         <Link href={`/industries/${codesParam}`} className="text-sm text-accent hover:underline">
           ← {industryName}
         </Link>

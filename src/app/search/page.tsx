@@ -11,7 +11,7 @@ export default async function SearchPage({
 
   return (
     <div className="flex flex-1 flex-col bg-zinc-50 dark:bg-black">
-      <main className="mx-auto w-full max-w-3xl flex-1 px-6 py-16">
+      <main className="mx-auto w-full max-w-3xl flex-1 px-6 pt-10 pb-16">
         <Link href="/" className="text-sm text-accent hover:underline">
           ← 홈
         </Link>

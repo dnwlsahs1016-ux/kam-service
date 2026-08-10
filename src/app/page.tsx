@@ -7,7 +7,7 @@ export const revalidate = 3600; // ingestion만 데이터를 바꾼다 - 매 요
 export default async function Home() {
   return (
     <div className="flex flex-1 flex-col bg-zinc-50 dark:bg-black">
-      <main className="mx-auto w-full max-w-3xl flex-1 px-6 py-16">
+      <main className="mx-auto w-full max-w-3xl flex-1 px-6 pt-10 pb-16">
         <div className="rounded-xl border border-accent/25 bg-accent-soft px-6 py-6">
           <h1 className="text-2xl font-semibold tracking-tight text-foreground">KAM사절차</h1>
           <p className="mt-3 text-zinc-700 dark:text-zinc-300">
