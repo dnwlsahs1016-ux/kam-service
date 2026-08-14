@@ -5,8 +5,11 @@ export const revalidate = 3600; // ingestion만 데이터를 바꾼다 - 매 요
 
 // 모든 블록에서 겹치는 카드 2장의 높이를 고정해, 블록마다 이미지 비율이 달라도
 // 겹쳐지는 모양(뒤 카드/앞 카드 크기 비)이 항상 똑같아 보이게 한다.
-const BACK_H = "h-64";
-const FRONT_H = "h-52";
+// 모바일은 두 카드가 안 겹치고 세로로 쌓이므로 높이를 고정하지 않고 원본 비율 그대로
+// 보여준다(고정 높이+cover였다면 좁은 폭 때문에 과하게 확대되어 잘렸다). 데스크톱만
+// 겹치는 카드 비율(뒤 카드/앞 카드)을 맞추기 위해 높이를 고정한다.
+const BACK_H = "h-auto sm:h-64";
+const FRONT_H = "h-auto sm:h-52";
 
 function ChipFrame({ label, height, children }: { label: string; height: string; children: React.ReactNode }) {
   return (
@@ -40,7 +43,7 @@ function ImageChip({
   // 외부 사이트 캡처는 다크모드 버전이 없다 - 그 사이트 자체가 라이트 전용이라서.
   hasDark?: boolean;
 }) {
-  const imgClass = `w-full h-full object-${fit} object-top`;
+  const imgClass = `w-full h-auto sm:h-full sm:object-${fit} sm:object-top`;
   return (
     <ChipFrame label={label} height={height}>
       {hasDark ? (
@@ -60,9 +63,9 @@ function ImageChip({
 
 function PreviewCollage({ back, front }: { back: React.ReactNode; front: React.ReactNode }) {
   return (
-    <div className="relative pb-10 pr-6">
-      <div className="w-[88%]">{back}</div>
-      <div className="absolute -bottom-2 right-0 w-[62%]">{front}</div>
+    <div className="flex flex-col gap-3 sm:relative sm:block sm:gap-0 sm:pb-10 sm:pr-6">
+      <div className="sm:w-[88%]">{back}</div>
+      <div className="sm:absolute sm:-bottom-2 sm:right-0 sm:w-[62%]">{front}</div>
     </div>
   );
 }
@@ -156,11 +159,11 @@ export default async function Home() {
           {STORY.map((s, i) => (
             <div key={s.title}>
               <ScrollReveal>
-                <div className="flex items-end gap-4">
-                  <span className="text-4xl font-bold leading-none tracking-tight text-accent/40 sm:text-5xl">
+                <div className="flex items-baseline gap-0 sm:gap-4">
+                  <span className="-mr-3 text-7xl font-bold leading-none tracking-tight text-accent/30 sm:mr-0 sm:text-5xl sm:text-accent/40">
                     {String(i + 1).padStart(2, "0")}
                   </span>
-                  <h2 className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
+                  <h2 className="relative z-10 text-xl font-semibold tracking-tight text-foreground sm:z-auto sm:text-2xl">
                     {s.title}
                   </h2>
                 </div>
