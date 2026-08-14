@@ -59,7 +59,7 @@ async function captureUpTo(url, mainLocate, lastLocate, out) {
 const APP_SHOTS = [
   ["http://localhost:3000/search?q=삼성전자", (p) => p.locator("main"), "preview-search.png", 300],
   ["http://localhost:3000/companies/00126380", (p) => p.locator("article").first(), "preview-company.png", 460],
-  ["http://localhost:3000/standards/701", (p) => p.locator("main"), "preview-standard.png", 460],
+  ["http://localhost:3000/standards/315", (p) => p.locator("main"), "preview-standard.png", 460],
 ];
 
 for (const [url, locate, out, maxHeight] of APP_SHOTS) {
