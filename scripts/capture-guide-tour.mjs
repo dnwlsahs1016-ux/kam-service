@@ -21,7 +21,7 @@ const browser = await chromium.launch();
 // 워밍업 (컴파일 대기가 녹화 중 흰 화면으로 찍히지 않도록)
 {
   const warmupPage = await browser.newPage();
-  for (const url of [base, `${base}/companies/00126380`]) {
+  for (const url of [`${base}/start`, `${base}/companies/00126380`]) {
     await warmupPage.goto(url, { waitUntil: "networkidle" });
   }
   await warmupPage.close();
@@ -45,9 +45,9 @@ const elapsed = () => (Date.now() - t0) / 1000;
 // 아직 안 끝난 리플로우/폰트 로딩/hydration이 그대로 영상 초반에 찍혀서 화면이 흔들리는
 //것처럼 보인다("첫 부분이 운다"). networkidle까지 기다리고, 폰트 로딩과 약간의 정지
 // 시간을 추가로 둬서 녹화 시작 시점엔 화면이 완전히 안정된 상태이게 한다.
-await page.goto(base, { waitUntil: "networkidle" });
+await page.goto(`${base}/start`, { waitUntil: "networkidle" });
 await page.evaluate(() => document.fonts.ready);
-await page.waitForTimeout(1000);
+await page.waitForTimeout(1800);
 const input = page.locator('input[name="q"]');
 await input.waitFor();
 await input.evaluate((el) => el.scrollIntoView({ block: "center" }));

@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+/* 다크모드는 시스템 설정이 아니라 헤더의 토글(.dark 클래스)로만 결정한다 - 기본은 라이트. */
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
   --background: #ffffff;
   --foreground: #221f1f;
@@ -18,18 +21,17 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-    --accent: #ff7a3d;
-    --accent-foreground: #1a1a1a;
-    --accent-soft: #2a1a10;
-  }
+:root.dark {
+  --background: #0a0a0a;
+  --foreground: #ededed;
+  --accent: #ff7a3d;
+  --accent-foreground: #1a1a1a;
+  --accent-soft: #2a1a10;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+  word-break: keep-all; /* 단어(어절) 중간에서 줄바꿈되지 않도록 */
 }

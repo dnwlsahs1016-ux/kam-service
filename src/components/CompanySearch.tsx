@@ -67,7 +67,7 @@ export function CompanySearch() {
     <div ref={boxRef} className="relative">
       <form
         action="/search"
-        className="flex items-center gap-2 rounded-lg border border-zinc-200 bg-white py-1.5 pl-4 pr-1.5 dark:border-zinc-800 dark:bg-zinc-950"
+        className="flex items-center gap-2 rounded-xl border border-zinc-200 bg-white py-1.5 pl-4 pr-1.5 shadow-sm transition-shadow duration-200 focus-within:shadow-md dark:border-zinc-800 dark:bg-zinc-950"
         onSubmit={() => setOpen(false)}
       >
         <input
