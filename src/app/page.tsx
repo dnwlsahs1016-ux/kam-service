@@ -38,25 +38,32 @@ function ImageChip({
   label: string;
   height: string;
   // 표·리스트처럼 테두리가 있는 캡처는 "contain"으로 잘리는 부분 없이 통째로 보여주고,
-  // 페이지를 훑어보는 캡처는 "cover"로 박스를 꽉 채운다.
+  // 페이지를 훑어보는 캡처는 "cover"로 박스를 꽉 채운다(데스크톱에서만 - 모바일은 항상 원본 비율).
   fit?: "cover" | "contain";
   // 외부 사이트 캡처는 다크모드 버전이 없다 - 그 사이트 자체가 라이트 전용이라서.
   hasDark?: boolean;
 }) {
-  const imgClass = `w-full h-auto sm:h-full sm:object-${fit} sm:object-top`;
+  // PC와 모바일은 화면 폭이 달라 같은 이미지를 억지로 늘리면 잘리거나 과하게 확대돼 보인다 -
+  // scripts/capture-home-preview.mjs가 폭별로 따로 캡처해둔 "-mobile" 버전을 쓴다.
+  const mobileSrc = src.replace(/\.png$/, "-mobile.png");
+  const desktopFit = `sm:h-full sm:object-${fit} sm:object-top`;
+  const variants = hasDark
+    ? [
+        { src: mobileSrc, className: `block w-full h-auto dark:hidden sm:hidden` },
+        { src: mobileSrc.replace(/\.png$/, "-dark.png"), className: `hidden w-full h-auto dark:block sm:hidden` },
+        { src, className: `hidden w-full sm:block sm:dark:hidden ${desktopFit}` },
+        { src: src.replace(/\.png$/, "-dark.png"), className: `hidden w-full sm:dark:block ${desktopFit}` },
+      ]
+    : [
+        { src: mobileSrc, className: "block w-full h-auto sm:hidden" },
+        { src, className: `hidden w-full sm:block ${desktopFit}` },
+      ];
   return (
     <ChipFrame label={label} height={height}>
-      {hasDark ? (
-        <>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={src} alt={alt} className={`${imgClass} dark:hidden`} />
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={src.replace(/\.png$/, "-dark.png")} alt={alt} className={`hidden ${imgClass} dark:block`} />
-        </>
-      ) : (
+      {variants.map((v) => (
         // eslint-disable-next-line @next/next/no-img-element
-        <img src={src} alt={alt} className={imgClass} />
-      )}
+        <img key={v.src} src={v.src} alt={alt} className={v.className} />
+      ))}
     </ChipFrame>
   );
 }
