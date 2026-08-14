@@ -166,11 +166,11 @@ export default async function Home() {
           {STORY.map((s, i) => (
             <div key={s.title}>
               <ScrollReveal>
-                <div className="flex items-baseline gap-0 sm:gap-4">
+                <div className="flex items-baseline gap-0 sm:items-end sm:gap-4">
                   <span className="-mr-3 text-7xl font-bold leading-none tracking-tight text-accent/30 sm:mr-0 sm:text-5xl sm:text-accent/40">
                     {String(i + 1).padStart(2, "0")}
                   </span>
-                  <h2 className="relative z-10 text-xl font-semibold tracking-tight text-foreground sm:z-auto sm:text-2xl">
+                  <h2 className="relative z-10 text-xl font-semibold tracking-tight text-foreground sm:static sm:z-auto sm:text-2xl">
                     {s.title}
                   </h2>
                 </div>
