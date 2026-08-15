@@ -71,7 +71,7 @@ function PreviewCollage({ back, front }: { back: React.ReactNode; front: React.R
 const STORY = [
   {
     title: "기업별로 하나씩 찾던 감사보고서, 검색 한 번으로",
-    body: "여러 기업의 핵심감사사항을 살펴보려면 DART에서 회사마다 사업보고서와 감사보고서를 직접 열어봐야 했습니다. 회사 이름만 검색하면, 실제 감사보고서에 실린 핵심감사사항과 감사절차 체크리스트를 바로 확인할 수 있습니다.",
+    body: "DART에서 회사마다 사업보고서와 감사보고서를 하나씩 열어보지 않아도, 회사 이름 검색 한 번으로 실제 감사보고서에 실린 핵심감사사항과 감사절차 체크리스트를 확인할 수 있습니다.",
     back: <ImageChip src="/preview-search.png" alt="삼성전자를 검색하는 화면" height={BACK_H} />,
     front: (
       <ImageChip
@@ -83,7 +83,7 @@ const STORY = [
   },
   {
     title: "업종마다 반복되는 이슈, 비중까지 한눈에",
-    body: "업종별로 어떤 이슈가 주로 핵심감사사항으로 선정되는지 파악하기는 쉽지 않았습니다. 업종을 선택하면 실제 사례를 기준으로 어떤 카테고리가 얼마나 자주 KAM으로 선정되었는지 비중과 함께 보여줍니다.",
+    body: "업종별로 어떤 이슈가 주로 핵심감사사항으로 선정되는지 파악하기가 쉽지 않았습니다. 업종을 선택하면 실제 사례를 기준으로 어떤 카테고리가 얼마나 자주 KAM으로 선정되었는지 비중과 함께 보여줍니다.",
     back: <ImageChip src="/preview-industries-grid.png" alt="업종을 선택하는 화면" height={BACK_H} />,
     front: (
       <ImageChip
@@ -95,7 +95,7 @@ const STORY = [
   },
   {
     title: "따로 찾아야 했던 기준서, 사례 안에서 바로",
-    body: "핵심감사사항과 관련된 회계·감사기준서도 별도로 찾아 확인해야 했습니다. 각 사례는 관련 감사기준서·회계기준서 원문으로 바로 연결되어 있어, 근거 기준까지 한 번에 확인할 수 있습니다.",
+    body: "관련 회계·감사기준서를 따로 찾아볼 필요 없이, 각 사례가 감사기준서·회계기준서 원문으로 바로 연결되어 있어 근거 기준까지 한 번에 확인할 수 있습니다.",
     back: <ImageChip src="/preview-standard.png" alt="감사기준서 315 원문을 보여주는 예시 화면" height={BACK_H} />,
     front: (
       <ImageChip
