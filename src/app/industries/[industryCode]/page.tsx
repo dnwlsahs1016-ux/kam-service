@@ -22,9 +22,9 @@ export default async function IndustryPage({
   if (categories.length === 0) notFound();
 
   return (
-    <div className="flex flex-1 flex-col bg-zinc-50 dark:bg-black">
+    <div className="flex flex-1 flex-col bg-zinc-50 dark:bg-zinc-900">
       <main className="mx-auto w-full max-w-3xl flex-1 px-6 pt-10 pb-16">
-        <Link href="/" className="text-sm text-accent hover:underline">
+        <Link href="/industries" className="text-sm text-accent hover:underline">
           ← 업종 목록
         </Link>
         <h1 className="mt-2 text-2xl font-semibold tracking-tight">{minor?.label ?? codesParam}</h1>

@@ -10,10 +10,10 @@ export default async function SearchPage({
   const results = q.trim() ? await searchCompanies(q) : [];
 
   return (
-    <div className="flex flex-1 flex-col bg-zinc-50 dark:bg-black">
+    <div className="flex flex-1 flex-col bg-zinc-50 dark:bg-zinc-900">
       <main className="mx-auto w-full max-w-3xl flex-1 px-6 pt-10 pb-16">
-        <Link href="/" className="text-sm text-accent hover:underline">
-          ← 홈
+        <Link href="/start" className="text-sm text-accent hover:underline">
+          ← 다른 방식으로 찾기
         </Link>
 
         <form action="/search" className="mt-4 flex gap-2">

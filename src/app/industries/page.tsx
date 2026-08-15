@@ -7,10 +7,10 @@ export default async function IndustriesPage() {
   const groups = await listIndustryGroups();
 
   return (
-    <div className="flex flex-1 flex-col bg-zinc-50 dark:bg-black">
+    <div className="flex flex-1 flex-col bg-zinc-50 dark:bg-zinc-900">
       <main className="mx-auto w-full max-w-3xl flex-1 px-6 pt-10 pb-16">
-        <Link href="/" className="text-sm text-accent hover:underline">
-          ← 홈으로
+        <Link href="/start" className="text-sm text-accent hover:underline">
+          ← 다른 방식으로 찾기
         </Link>
         <h1 className="mt-2 text-2xl font-semibold tracking-tight">업종에서 직접 확인</h1>
         <p className="mt-2 text-zinc-600 dark:text-zinc-400">

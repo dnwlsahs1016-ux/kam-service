@@ -30,7 +30,7 @@ export default async function AuditorCategoryPage({
   );
 
   return (
-    <div className="flex flex-1 flex-col bg-zinc-50 dark:bg-black">
+    <div className="flex flex-1 flex-col bg-zinc-50 dark:bg-zinc-900">
       <main className="mx-auto w-full max-w-3xl flex-1 px-6 pt-10 pb-16">
         <Link href="/auditors" className={`text-sm hover:underline ${colors.text}`}>
           ← 회계법인 목록

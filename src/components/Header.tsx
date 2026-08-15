@@ -6,7 +6,9 @@ import { ThemeToggle } from "./ThemeToggle";
 
 export function Header() {
   const pathname = usePathname();
-  const onStartPage = pathname === "/start";
+  // "시작하기"는 홈 화면에서만 의미가 있다 - 다른 페이지는 이미 둘러보는 중이므로,
+  // 왼쪽 로고(홈 이동)만으로 충분하고 오른쪽엔 테마 토글만 남긴다.
+  const isHome = pathname === "/";
 
   return (
     <header className="border-b border-accent/20 bg-white dark:bg-zinc-950">
@@ -21,12 +23,14 @@ export function Header() {
         </Link>
         <div className="flex items-center gap-2">
           <ThemeToggle />
-          <Link
-            href={onStartPage ? "/" : "/start"}
-            className="rounded-full bg-accent px-4 py-1.5 text-sm font-semibold text-accent-foreground hover:opacity-90"
-          >
-            {onStartPage ? "홈화면으로" : "시작하기"}
-          </Link>
+          {isHome && (
+            <Link
+              href="/start"
+              className="rounded-full bg-accent px-4 py-1.5 text-sm font-semibold text-accent-foreground hover:opacity-90"
+            >
+              시작하기
+            </Link>
+          )}
         </div>
       </div>
     </header>
