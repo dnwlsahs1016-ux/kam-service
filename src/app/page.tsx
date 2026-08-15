@@ -152,10 +152,10 @@ export default async function Home() {
             <div key={s.title}>
               <ScrollReveal>
                 <div className="flex items-end gap-4">
-                  <span className="text-4xl font-bold leading-[56px] tracking-tight text-accent/40 sm:text-5xl sm:leading-none">
+                  <span className="text-[42px] font-bold leading-[56px] tracking-tight text-accent/40 sm:text-[52px] sm:leading-none">
                     {String(i + 1).padStart(2, "0")}
                   </span>
-                  <h2 className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
+                  <h2 className="text-lg font-semibold tracking-tight text-foreground sm:text-xl">
                     {titleHead}
                     {titleTail && (
                       <>
