@@ -85,6 +85,18 @@ await captureUpTo(
   (p) => p.locator("ul").first(),
   "preview-industry.png"
 );
+await captureUpTo(
+  "http://localhost:3000/auditors",
+  (p) => p.locator("main"),
+  (p) => p.getByText("KAM 데이터가 있는 회사 중", { exact: false }),
+  "preview-auditors-list.png"
+);
+await captureUpTo(
+  `http://localhost:3000/auditors/${encodeURIComponent("삼일")}`,
+  (p) => p.locator("main"),
+  (p) => p.getByText("표시된 감사인은 2026년 1분기보고서 기준입니다", { exact: false }),
+  "preview-auditor-detail.png"
+);
 
 await page.emulateMedia({ colorScheme: "dark" });
 for (const [url, locate, out, maxHeight] of APP_SHOTS) {
@@ -108,6 +120,18 @@ await captureUpTo(
   (p) => p.locator("main"),
   (p) => p.locator("ul").first(),
   "preview-industry-dark.png"
+);
+await captureUpTo(
+  "http://localhost:3000/auditors",
+  (p) => p.locator("main"),
+  (p) => p.getByText("KAM 데이터가 있는 회사 중", { exact: false }),
+  "preview-auditors-list-dark.png"
+);
+await captureUpTo(
+  `http://localhost:3000/auditors/${encodeURIComponent("삼일")}`,
+  (p) => p.locator("main"),
+  (p) => p.getByText("표시된 감사인은 2026년 1분기보고서 기준입니다", { exact: false }),
+  "preview-auditor-detail-dark.png"
 );
 await page.emulateMedia({ colorScheme: "light" });
 

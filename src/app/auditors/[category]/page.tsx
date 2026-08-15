@@ -42,10 +42,10 @@ export default async function AuditorCategoryPage({
           있습니다.
         </p>
 
-        <div className="mt-6 grid grid-cols-2 gap-px overflow-hidden rounded-lg border border-zinc-200 bg-zinc-200 dark:border-zinc-800 dark:bg-zinc-800 sm:grid-cols-5">
+        <div className="mt-6 grid grid-cols-1 gap-px overflow-hidden rounded-2xl border border-zinc-200 bg-zinc-100 shadow-sm dark:border-zinc-700 dark:bg-zinc-700 sm:grid-cols-5">
           {majors.map((major) => (
-            <div key={major.major} className="flex flex-col bg-white dark:bg-zinc-950">
-              <div className={`border-b px-3 py-2 text-center text-sm font-semibold text-foreground ${colors.border} ${colors.fill}`}>
+            <div key={major.major} className="flex flex-col bg-white dark:bg-zinc-800">
+              <div className={`border-b px-3 py-2 text-center text-xs font-semibold uppercase tracking-wider ${colors.border} ${colors.fill} ${colors.text}`}>
                 {major.major}
               </div>
               <div className="flex flex-1 flex-col">
@@ -53,10 +53,10 @@ export default async function AuditorCategoryPage({
                   <Link
                     key={minor.label}
                     href={`/auditors/${category}/${encodeURIComponent(minor.label)}`}
-                    className={`border-b border-zinc-100 px-3 py-3 text-center text-sm dark:border-zinc-900 ${colors.hoverBg}`}
+                    className={`border-b border-zinc-100 px-3 py-3 text-center text-sm transition-colors duration-150 dark:border-zinc-900 ${colors.hoverBg}`}
                   >
                     <div className="font-medium">{minor.label}</div>
-                    <div className="mt-0.5 text-xs text-zinc-500 dark:text-zinc-400">
+                    <div className="mt-0.5 text-xs tabular-nums text-zinc-500 dark:text-zinc-400">
                       {minor.companies.length}개사
                     </div>
                   </Link>

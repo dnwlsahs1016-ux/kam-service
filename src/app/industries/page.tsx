@@ -17,10 +17,10 @@ export default async function IndustriesPage() {
           업종을 선택하면 그 업종에서 실제로 보고된 핵심감사사항을 카테고리별로 볼 수 있습니다.
         </p>
 
-        <div className="mt-6 grid grid-cols-2 gap-px overflow-hidden rounded-lg border border-zinc-200 bg-zinc-200 dark:border-zinc-800 dark:bg-zinc-800 sm:grid-cols-5">
+        <div className="mt-6 grid grid-cols-1 gap-px overflow-hidden rounded-2xl border border-zinc-200 bg-zinc-100 shadow-sm dark:border-zinc-700 dark:bg-zinc-700 sm:grid-cols-5">
           {groups.map((group) => (
-            <div key={group.major} className="flex flex-col bg-white dark:bg-zinc-950">
-              <div className="border-b border-accent/20 bg-accent-soft px-3 py-2 text-center text-sm font-semibold text-foreground">
+            <div key={group.major} className="flex flex-col bg-white dark:bg-zinc-800">
+              <div className="border-b border-accent/10 bg-accent-soft/60 px-3 py-2 text-center text-xs font-semibold uppercase tracking-wider text-accent">
                 {group.major}
               </div>
               <div className="flex flex-1 flex-col">
@@ -28,10 +28,10 @@ export default async function IndustriesPage() {
                   <Link
                     key={item.label}
                     href={`/industries/${item.codes.join(",")}`}
-                    className="border-b border-zinc-100 px-3 py-3 text-center text-sm hover:bg-accent-soft dark:border-zinc-900 dark:hover:bg-zinc-900"
+                    className="border-b border-zinc-100 px-3 py-3 text-center text-sm transition-colors duration-150 hover:bg-accent-soft dark:border-zinc-900 dark:hover:bg-zinc-900"
                   >
                     <div className="font-medium">{item.label}</div>
-                    <div className="mt-0.5 text-xs text-zinc-500 dark:text-zinc-400">
+                    <div className="mt-0.5 text-xs tabular-nums text-zinc-500 dark:text-zinc-400">
                       {item.companyCount}개사 · {item.kamCount}건
                     </div>
                   </Link>

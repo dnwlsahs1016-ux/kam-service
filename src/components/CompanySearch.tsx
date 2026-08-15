@@ -67,7 +67,7 @@ export function CompanySearch() {
     <div ref={boxRef} className="relative">
       <form
         action="/search"
-        className="flex items-center gap-2 rounded-xl border border-zinc-200 bg-white py-1.5 pl-4 pr-1.5 shadow-sm transition-shadow duration-200 focus-within:shadow-md dark:border-zinc-800 dark:bg-zinc-950"
+        className="flex items-center gap-2 rounded-xl border border-zinc-200 bg-white py-1.5 pl-4 pr-1.5 shadow-sm transition-shadow duration-200 focus-within:shadow-md dark:border-zinc-700 dark:bg-zinc-800"
         onSubmit={() => setOpen(false)}
       >
         <input
@@ -97,7 +97,7 @@ export function CompanySearch() {
         <ul
           id="company-search-listbox"
           role="listbox"
-          className="absolute z-10 mt-1 w-full overflow-hidden rounded-lg border border-zinc-200 bg-white shadow-lg dark:border-zinc-800 dark:bg-zinc-900"
+          className="absolute z-10 mt-1 w-full overflow-hidden rounded-lg border border-zinc-200 bg-white shadow-lg dark:border-zinc-700 dark:bg-zinc-900"
         >
           {suggestions.map((s, i) => (
             <li key={s.corpCode} id={`company-search-option-${i}`} role="option" aria-selected={i === activeIndex}>

@@ -11,7 +11,7 @@ export function Header() {
   const isHome = pathname === "/";
 
   return (
-    <header className="border-b border-accent/20 bg-white dark:bg-zinc-950">
+    <header className="border-b border-accent/20 bg-white dark:bg-zinc-800">
       <div className="mx-auto flex w-full max-w-3xl items-center justify-between px-6 py-4">
         <Link
           href="/"

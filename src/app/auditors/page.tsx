@@ -20,23 +20,24 @@ export default async function AuditorsPage() {
           업종별로 볼 수 있습니다.
         </p>
 
-        <div className="mt-6 divide-y divide-zinc-200 overflow-hidden rounded-lg border border-zinc-200 dark:divide-zinc-800 dark:border-zinc-800">
+        <div className="mt-6 divide-y divide-zinc-200 overflow-hidden rounded-2xl border border-zinc-200 shadow-sm dark:divide-zinc-700 dark:border-zinc-700">
           {firms.map((firm) => {
             const pct = totalFirmCount > 0 ? Math.round((firm.count / totalFirmCount) * 1000) / 10 : 0;
             return (
               <Link
                 key={firm.category}
                 href={`/auditors/${firm.category}`}
-                className="relative flex items-center justify-between overflow-hidden bg-white px-4 py-4 hover:bg-black/[0.02] dark:bg-zinc-950 dark:hover:bg-white/[0.03]"
+                className="relative flex items-center justify-between overflow-hidden bg-white px-4 py-4 transition-colors duration-200 hover:bg-black/[0.02] dark:bg-zinc-800 dark:hover:bg-white/[0.03]"
               >
                 <div
-                  className={`absolute inset-y-0 left-0 ${AUDITOR_COLORS[firm.category].fill}`}
+                  className={`absolute inset-y-0 left-0 transition-all duration-300 ${AUDITOR_COLORS[firm.category].fill}`}
                   style={{ width: `${pct}%` }}
                   aria-hidden
                 />
                 <span className="relative font-medium">{firm.category}</span>
-                <span className="relative text-sm text-zinc-500 dark:text-zinc-400">
-                  {firm.count}건 · {pct}%
+                <span className={`relative text-sm tabular-nums ${AUDITOR_COLORS[firm.category].text}`}>
+                  {firm.count}건 · {pct < 10 ? " " : ""}
+                  {pct}%
                 </span>
               </Link>
             );

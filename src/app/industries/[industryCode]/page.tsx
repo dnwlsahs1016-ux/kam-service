@@ -33,7 +33,7 @@ export default async function IndustryPage({
           유의적인지와 어떤 절차로 대응했는지를 볼 수 있습니다.
         </p>
 
-        <ul className="mt-6 divide-y divide-zinc-200 rounded-lg border border-zinc-200 dark:divide-zinc-800 dark:border-zinc-800">
+        <ul className="mt-6 divide-y divide-zinc-200 rounded-lg border border-zinc-200 dark:divide-zinc-700 dark:border-zinc-700">
           {(() => {
             const total = categories.reduce((sum, c) => sum + c.count, 0);
             return categories.map((c) => {

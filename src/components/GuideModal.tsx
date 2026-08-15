@@ -11,7 +11,7 @@ const GUIDES = [
     key: "company",
     label: "기업으로 찾기",
     src: "/guide/guide-tour.mp4",
-    stepBoundaries: [0, 8.946, 12.967],
+    stepBoundaries: [0, 9.39, 13.357],
     steps: [
       { title: "1. 검색", desc: "기업 이름으로 검색하세요." },
       { title: "2. 확인", desc: "그 회사의 KAM 사례와 감사절차 체크리스트를 확인하세요." },
@@ -22,7 +22,7 @@ const GUIDES = [
     key: "industry",
     label: "업종으로 찾기",
     src: "/guide/guide-tour-industry.mp4",
-    stepBoundaries: [0, 9.486, 13.328],
+    stepBoundaries: [0, 8.323, 11.654],
     steps: [
       { title: "1. 업종 선택", desc: "업종별로 확인하러 가기를 눌러 관심 있는 업종을 선택하세요." },
       { title: "2. 카테고리 선택", desc: "업종 내 주요 KAM 카테고리를 선택하세요." },
@@ -33,7 +33,7 @@ const GUIDES = [
     key: "auditors",
     label: "회계법인으로 찾기",
     src: "/guide/guide-tour-auditors.mp4",
-    stepBoundaries: [0, 8.321, 11.468],
+    stepBoundaries: [0, 8.064, 11.065],
     steps: [
       { title: "1. 회계법인 선택", desc: "회계법인별로 확인하러 가기를 눌러 관심 있는 회계법인을 선택하세요." },
       { title: "2. 업종 선택", desc: "그 법인이 감사인인 회사를 업종별로 확인하세요." },
@@ -123,7 +123,7 @@ export function GuideModal() {
           setGuideIndex(0);
           setOpen(true);
         }}
-        className="flex w-full items-center gap-3 rounded-xl border border-zinc-200 bg-white px-4 py-3.5 text-left shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-accent/40 hover:shadow-md dark:border-zinc-800 dark:bg-zinc-950"
+        className="flex w-full items-center gap-3 rounded-xl border border-zinc-200 bg-white px-4 py-3.5 text-left shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-accent/40 hover:shadow-md dark:border-zinc-700 dark:bg-zinc-800"
       >
         <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-accent text-accent-foreground">
           <svg viewBox="0 0 24 24" fill="currentColor" className="ml-0.5 h-4 w-4">
@@ -145,10 +145,10 @@ export function GuideModal() {
           onClick={() => setOpen(false)}
         >
           <div
-            className="w-full max-w-2xl overflow-hidden rounded-xl bg-white shadow-2xl dark:bg-zinc-950"
+            className="w-full max-w-2xl overflow-hidden rounded-xl bg-white shadow-2xl dark:bg-zinc-800"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between border-b border-zinc-200 px-5 py-3 dark:border-zinc-800">
+            <div className="flex items-center justify-between border-b border-zinc-200 px-5 py-3 dark:border-zinc-700">
               <div className="flex gap-1">
                 {GUIDES.map((g, i) => (
                   <button

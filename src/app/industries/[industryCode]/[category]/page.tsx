@@ -79,7 +79,7 @@ export default async function CategoryPage({
           ← {industryName}
         </Link>
         <h1 className="mt-2 text-2xl font-semibold tracking-tight">{category}</h1>
-        <ul className="mt-4 space-y-1.5 rounded-lg border border-zinc-200 bg-white p-4 text-sm text-zinc-600 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-400">
+        <ul className="mt-4 space-y-1.5 rounded-lg border border-zinc-200 bg-white p-4 text-sm text-zinc-600 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-400">
           <li className="flex gap-2">
             <span className="mt-0.5 text-accent">·</span>
             <span>
@@ -100,7 +100,7 @@ export default async function CategoryPage({
           </li>
         </ul>
 
-        <div className="mt-4 rounded-lg border border-zinc-200 bg-white p-3 dark:border-zinc-800 dark:bg-zinc-950">
+        <div className="mt-4 rounded-lg border border-zinc-200 bg-white p-3 dark:border-zinc-700 dark:bg-zinc-800">
           <span className="text-xs font-medium uppercase text-zinc-500 dark:text-zinc-400">
             회사 바로가기
           </span>
@@ -143,7 +143,7 @@ export default async function CategoryPage({
                       {group.cases.map((c) => (
                         <article
                           key={c.id}
-                          className="rounded-lg border border-zinc-200 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-950"
+                          className="rounded-lg border border-zinc-200 bg-white p-5 dark:border-zinc-700 dark:bg-zinc-800"
                         >
                           <div className="flex items-baseline justify-between gap-4">
                             <h2 className="font-medium">{c.title}</h2>

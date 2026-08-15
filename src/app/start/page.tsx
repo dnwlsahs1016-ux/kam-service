@@ -34,7 +34,7 @@ export default function StartPage() {
             </h2>
             <Link
               href="/industries"
-              className="mt-3 flex items-center justify-between rounded-xl border border-zinc-200 bg-white px-4 py-3.5 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-accent/40 hover:bg-accent-soft hover:shadow-md dark:border-zinc-800 dark:bg-zinc-950 dark:hover:bg-zinc-900"
+              className="mt-3 flex items-center justify-between rounded-xl border border-zinc-200 bg-white px-4 py-3.5 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-accent/40 hover:bg-accent-soft hover:shadow-md dark:border-zinc-700 dark:bg-zinc-800 dark:hover:bg-zinc-700"
             >
               <span>
                 <span className="block text-sm font-medium sm:inline">업종별로 확인하러 가기</span>
@@ -52,7 +52,7 @@ export default function StartPage() {
             </h2>
             <Link
               href="/auditors"
-              className="mt-3 flex items-center justify-between rounded-xl border border-zinc-200 bg-white px-4 py-3.5 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-accent/40 hover:bg-accent-soft hover:shadow-md dark:border-zinc-800 dark:bg-zinc-950 dark:hover:bg-zinc-900"
+              className="mt-3 flex items-center justify-between rounded-xl border border-zinc-200 bg-white px-4 py-3.5 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-accent/40 hover:bg-accent-soft hover:shadow-md dark:border-zinc-700 dark:bg-zinc-800 dark:hover:bg-zinc-700"
             >
               <span>
                 <span className="block text-sm font-medium sm:inline">회계법인별로 확인하러 가기</span>

@@ -38,7 +38,7 @@ export default async function SearchPage({
           </p>
         )}
 
-        <ul className="mt-3 divide-y divide-zinc-200 rounded-lg border border-zinc-200 dark:divide-zinc-800 dark:border-zinc-800">
+        <ul className="mt-3 divide-y divide-zinc-200 rounded-lg border border-zinc-200 dark:divide-zinc-700 dark:border-zinc-700">
           {results.map((r) => (
             <li key={r.corpCode}>
               <Link

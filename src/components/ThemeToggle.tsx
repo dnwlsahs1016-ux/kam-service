@@ -36,7 +36,7 @@ export function ThemeToggle() {
   const dark = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 
   return (
-    <div className="flex items-center gap-0.5 rounded-full bg-zinc-100 p-1 dark:bg-zinc-800">
+    <div className="flex items-center gap-0.5 rounded-full bg-zinc-100 p-1 dark:bg-zinc-900">
       <button
         type="button"
         onClick={() => setDark(false)}
@@ -44,7 +44,7 @@ export function ThemeToggle() {
         aria-pressed={!dark}
         className={`flex h-6 w-6 items-center justify-center rounded-full transition-colors ${
           !dark
-            ? "bg-white text-accent shadow-sm dark:bg-zinc-950"
+            ? "bg-white text-accent shadow-sm dark:bg-zinc-800"
             : "text-zinc-400 dark:text-zinc-500"
         }`}
       >
@@ -59,7 +59,7 @@ export function ThemeToggle() {
         aria-pressed={dark}
         className={`flex h-6 w-6 items-center justify-center rounded-full transition-colors ${
           dark
-            ? "bg-white text-accent shadow-sm dark:bg-zinc-950"
+            ? "bg-white text-accent shadow-sm dark:bg-zinc-800"
             : "text-zinc-400 dark:text-zinc-500"
         }`}
       >

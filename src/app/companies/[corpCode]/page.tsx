@@ -53,7 +53,7 @@ export default async function CompanyPage({
           {cases.map((c) => (
             <article
               key={c.id}
-              className="rounded-lg border border-zinc-200 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-950"
+              className="rounded-lg border border-zinc-200 bg-white p-5 dark:border-zinc-700 dark:bg-zinc-800"
             >
               <div className="flex items-baseline justify-between gap-4">
                 <h2 className="font-medium">{c.title}</h2>

@@ -12,7 +12,7 @@ const FRONT_H = "h-auto sm:h-52";
 
 function ChipFrame({ height, children }: { height: string; children: React.ReactNode }) {
   return (
-    <div className={`overflow-hidden rounded-xl border border-zinc-200 bg-white shadow-lg dark:border-zinc-800 dark:bg-zinc-950 ${height}`}>
+    <div className={`overflow-hidden rounded-xl border border-zinc-200 bg-white shadow-lg dark:border-zinc-700 dark:bg-zinc-800 ${height}`}>
       {children}
     </div>
   );
@@ -121,6 +121,18 @@ const STORY = [
       />
     ),
   },
+  {
+    title: "바뀌었을 수도 있는 감사인, 최신 기준으로 확인",
+    body: "지원할 회계법인이 지금 어떤 회사들을 감사하고 있는지 한눈에 보고 싶을 때, 회계법인을 선택하면 2026년 1분기보고서 기준 현재 감사인인 회사들을 업종별로 확인할 수 있습니다.",
+    back: <ImageChip src="/preview-auditors-list.png" alt="회계법인별 목록을 보여주는 화면" height={BACK_H} />,
+    front: (
+      <ImageChip
+        src="/preview-auditor-detail.png"
+        alt="삼일회계법인이 감사인인 회사를 업종별로 보여주는 예시 화면"
+        height={FRONT_H}
+      />
+    ),
+  },
 ];
 
 export default async function Home() {
@@ -128,7 +140,7 @@ export default async function Home() {
     <div className="flex flex-1 flex-col bg-zinc-50 dark:bg-zinc-900">
       <main className="mx-auto w-full max-w-3xl flex-1 px-6 pt-10 pb-16">
         <h1 className="sr-only">KAM사절차</h1>
-        <div className="rounded-2xl border border-zinc-200 bg-white px-6 py-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-950">
+        <div className="rounded-2xl border border-zinc-200 bg-white px-6 py-6 shadow-sm dark:border-zinc-700 dark:bg-zinc-800">
           <h2 className="text-2xl font-bold leading-tight tracking-tight sm:text-3xl">
             <span className="text-accent">KAM사절차</span> 서비스란?
           </h2>
