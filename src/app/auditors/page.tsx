@@ -11,10 +11,7 @@ export default async function AuditorsPage() {
   return (
     <div className="flex flex-1 flex-col bg-zinc-50 dark:bg-zinc-900">
       <main className="mx-auto w-full max-w-3xl flex-1 px-6 pt-10 pb-16">
-        <Link href="/start" className="text-sm text-accent hover:underline">
-          ← 다른 방식으로 찾기
-        </Link>
-        <h1 className="mt-2 text-2xl font-semibold tracking-tight">회계법인별로 찾기</h1>
+        <h1 className="text-2xl font-semibold tracking-tight">회계법인별로 찾기</h1>
         <p className="mt-2 text-zinc-600 dark:text-zinc-400">
           회계법인을 선택하면 그 법인이 2026년 1분기보고서 기준 현재 감사인으로 있는 회사를
           업종별로 볼 수 있습니다.

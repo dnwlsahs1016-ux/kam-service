@@ -1,4 +1,5 @@
-import { EntryOptions } from "@/components/EntryOptions";
+import Link from "next/link";
+import { GuideModalBanner } from "@/components/GuideModal";
 import { ScrollReveal } from "@/components/ScrollReveal";
 
 export const revalidate = 3600; // ingestion만 데이터를 바꾼다 - 매 요청 Turso 왕복 대신 1시간 캐시
@@ -138,22 +139,57 @@ const STORY = [
 export default async function Home() {
   return (
     <div className="flex flex-1 flex-col bg-zinc-50 dark:bg-zinc-900">
-      <main className="mx-auto w-full max-w-3xl flex-1 px-6 pt-10 pb-16">
-        <h1 className="sr-only">KAM사절차</h1>
-        <div className="rounded-2xl border border-zinc-200 bg-white px-6 py-6 shadow-sm dark:border-zinc-700 dark:bg-zinc-800">
-          <h2 className="text-2xl font-bold leading-tight tracking-tight sm:text-3xl">
-            <span className="text-accent">KAM사절차</span> 서비스란?
-          </h2>
-          <p className="mt-3 text-sm leading-relaxed text-zinc-600 dark:text-zinc-400 sm:text-base">
-            실제 감사보고서에 실린{" "}
-            <strong className="whitespace-nowrap font-semibold text-accent">핵심감사사항(KAM)</strong>
-            <br className="sm:hidden" /> 사례를{" "}
-            <span className="whitespace-nowrap">업종·카테고리별로</span> 정리하여, 실무와
-            회계법인 면접 준비에 도움이 되도록 만든 학습 자료입니다.
+      <main className="mx-auto w-full max-w-3xl flex-1 px-6 pt-10">
+        <section className="relative flex min-h-[85vh] flex-col items-center justify-center text-center">
+          <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">
+            <span className="text-accent">KAM</span>사절차
+          </h1>
+          <p className="mt-4 max-w-xl text-base leading-relaxed text-zinc-600 dark:text-zinc-400 sm:text-lg">
+            실제 감사보고서에 실린 <strong className="font-semibold text-accent">핵심감사사항(KAM)</strong> 사례를
+            업종·카테고리별로 정리하여, 실무와 회계법인 면접 준비에 도움이 되도록 만든 학습
+            자료입니다.
           </p>
-        </div>
+          <div className="mt-8 flex w-full max-w-sm flex-col gap-3">
+            <Link
+              href="/search"
+              className="flex items-center justify-center gap-2 rounded-full border border-accent/30 bg-zinc-50 px-6 py-3 text-sm font-semibold text-accent hover:bg-accent-soft dark:bg-zinc-900"
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="h-4 w-4 shrink-0">
+                <circle cx="11" cy="11" r="7" />
+                <path d="m20 20-3.5-3.5" strokeLinecap="round" />
+              </svg>
+              기업으로 찾기
+            </Link>
+            <div className="flex gap-3">
+              <Link
+                href="/industries"
+                className="flex-1 rounded-full border border-accent/30 bg-zinc-50 px-4 py-3 text-center text-sm font-semibold text-accent hover:bg-accent-soft dark:bg-zinc-900"
+              >
+                업종으로 찾기
+              </Link>
+              <Link
+                href="/auditors"
+                className="flex-1 rounded-full border border-accent/30 bg-zinc-50 px-4 py-3 text-center text-sm font-semibold text-accent hover:bg-accent-soft dark:bg-zinc-900"
+              >
+                회계법인으로 찾기
+              </Link>
+            </div>
+          </div>
 
-        <div className="mt-16 flex flex-col gap-16">
+          <div className="absolute bottom-6 flex flex-col items-center gap-1 text-zinc-400 dark:text-zinc-600">
+            <span className="text-xs">더 알아보기</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="h-4 w-4 animate-bounce">
+              <path d="m6 9 6 6 6-6" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </div>
+        </section>
+      </main>
+
+      {/* "더 알아보기" 지점부터 배경 톤을 바꿔서, 히어로(제품 소개)와 설명 섹션 사이에
+          실제 경계가 있는 것처럼 보이게 한다 - 스크롤한 보람이 느껴지도록. */}
+      <div className="bg-white dark:bg-zinc-800">
+        <div className="mx-auto w-full max-w-3xl px-6 py-16">
+        <div className="flex flex-col gap-16">
           {STORY.map((s, i) => {
             // 모바일에서는 제목을 쉼표 지점에서 강제로 2줄로 접어, 그 2줄 높이에 숫자
             // 크기를 맞춘다(PC는 원래 한 줄 그대로 - sm:에서 전부 되돌림).
@@ -191,9 +227,10 @@ export default async function Home() {
         </div>
 
         <div className="mt-12">
-          <EntryOptions />
+          <GuideModalBanner />
         </div>
-      </main>
+        </div>
+      </div>
     </div>
   );
 }

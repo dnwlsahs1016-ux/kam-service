@@ -19,7 +19,7 @@ const browser = await chromium.launch();
 {
   const warmupPage = await browser.newPage();
   for (const url of [
-    `${base}/start`,
+    `${base}/`,
     `${base}/auditors`,
     `${base}/auditors/${encodeURIComponent(AUDITOR_CATEGORY)}`,
     `${base}/auditors/${encodeURIComponent(AUDITOR_CATEGORY)}/${encodeURIComponent(AUDITOR_MINOR)}`,
@@ -47,10 +47,11 @@ const elapsed = () => (Date.now() - t0) / 1000;
 // 리플로우/폰트 로딩/hydration이 영상 초반에 그대로 찍혀 화면이 흔들리는 것처럼 보인다.
 // networkidle과 폰트 로딩을 기다리고 1초 정지 시간을 둬서 녹화 시작 시점을 완전히
 // 안정된 상태로 만든다(guide-tour.mjs와 동일한 수정, 실제로 확인해서 검증됨).
-await page.goto(`${base}/start`, { waitUntil: "networkidle" });
+await page.goto(`${base}/`, { waitUntil: "networkidle" });
 await page.evaluate(() => document.fonts.ready);
 await page.waitForTimeout(1800);
-const auditorsEntryLink = page.locator('a[href="/auditors"]').first();
+// 헤더 nav에도 같은 href의 링크가 있어 히어로 안의 버튼만 콕 집어 고른다.
+const auditorsEntryLink = page.locator('main section a[href="/auditors"]');
 await auditorsEntryLink.waitFor();
 await auditorsEntryLink.evaluate((el) => el.scrollIntoView({ block: "center" }));
 await page.waitForTimeout(435);

@@ -1,17 +1,47 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+
+// 모달의 열림 상태를 모듈 스코프 스토어로 공유한다(ThemeToggle의 다크모드 패턴과 동일) -
+// 헤더의 "이용가이드"는 어느 페이지에 있든 같은 모달을 바로 띄워야 해서, /start 같은
+// 특정 페이지로 이동시키지 않고 여기서 직접 연다. 영상은 open이 true일 때만 마운트되니
+// (아래 JSX) 전역으로 둬도 페이지 진입마다 미리 불러오지 않는다.
+let guideListeners: Array<() => void> = [];
+let guideOpen = false;
+function subscribeGuide(cb: () => void) {
+  guideListeners.push(cb);
+  return () => {
+    guideListeners = guideListeners.filter((l) => l !== cb);
+  };
+}
+function getGuideSnapshot() {
+  return guideOpen;
+}
+function getGuideServerSnapshot() {
+  return false;
+}
+export function openGuideModal() {
+  guideOpen = true;
+  guideListeners.forEach((l) => l());
+}
+function closeGuideModal() {
+  guideOpen = false;
+  guideListeners.forEach((l) => l());
+}
 
 // 각 가이드는 하나의 이어지는 영상이다(회사 검색 흐름 / 업종 탐색 흐름 / 회계법인 탐색
 // 흐름). 단계 사이에 화면이 끊기지 않도록, 클립을 따로 녹화하는 대신 실제 조작을 처음부터
 // 끝까지 한 번에 녹화하고, 그중 몇 초 지점부터가 몇 번째 "단계"인지만 stepBoundaries로
 // 표시한다. currentTime이 그 경계를 넘어가면 표시되는 단계 번호/설명만 갈아끼운다.
+// 파일명이 그대로라 재녹화해도 브라우저가 예전 캐시를 계속 보여줄 수 있다 - 다시 찍을
+// 때마다 이 버전을 올려서 URL을 바꿔야 캐시를 확실히 무시하고 새 영상을 받아온다.
+const GUIDE_VERSION = 3;
 const GUIDES = [
   {
     key: "company",
     label: "기업으로 찾기",
-    src: "/guide/guide-tour.mp4",
-    stepBoundaries: [0, 9.39, 13.357],
+    src: `/guide/guide-tour.mp4?v=${GUIDE_VERSION}`,
+    stepBoundaries: [0, 12.955, 16.913],
     steps: [
       { title: "1. 검색", desc: "기업 이름으로 검색하세요." },
       { title: "2. 확인", desc: "그 회사의 KAM 사례와 감사절차 체크리스트를 확인하세요." },
@@ -21,10 +51,10 @@ const GUIDES = [
   {
     key: "industry",
     label: "업종으로 찾기",
-    src: "/guide/guide-tour-industry.mp4",
-    stepBoundaries: [0, 8.323, 11.654],
+    src: `/guide/guide-tour-industry.mp4?v=${GUIDE_VERSION}`,
+    stepBoundaries: [0, 8.193, 11.493],
     steps: [
-      { title: "1. 업종 선택", desc: "업종별로 확인하러 가기를 눌러 관심 있는 업종을 선택하세요." },
+      { title: "1. 업종 선택", desc: "업종으로 찾기를 눌러 관심 있는 업종을 선택하세요." },
       { title: "2. 카테고리 선택", desc: "업종 내 주요 KAM 카테고리를 선택하세요." },
       { title: "3. 기준서 이동", desc: "관련 기준서를 클릭하면 원문으로 바로 이동합니다." },
     ],
@@ -32,18 +62,64 @@ const GUIDES = [
   {
     key: "auditors",
     label: "회계법인으로 찾기",
-    src: "/guide/guide-tour-auditors.mp4",
-    stepBoundaries: [0, 8.064, 11.065],
+    src: `/guide/guide-tour-auditors.mp4?v=${GUIDE_VERSION}`,
+    stepBoundaries: [0, 7.944, 10.993],
     steps: [
-      { title: "1. 회계법인 선택", desc: "회계법인별로 확인하러 가기를 눌러 관심 있는 회계법인을 선택하세요." },
+      { title: "1. 회계법인 선택", desc: "회계법인으로 찾기를 눌러 관심 있는 회계법인을 선택하세요." },
       { title: "2. 업종 선택", desc: "그 법인이 감사인인 회사를 업종별로 확인하세요." },
       { title: "3. 회사 확인", desc: "회사를 클릭하면 KAM 사례와 감사절차 체크리스트로 이동합니다." },
     ],
   },
 ];
 
+// /start 페이지 카드로 쓰는 버튼 - 실제 모달은 아래 GuideModal이 전역에서 하나만 그린다.
+export function GuideModalLauncher() {
+  return (
+    <button
+      type="button"
+      onClick={openGuideModal}
+      className="flex w-full items-center gap-3 rounded-xl border border-zinc-200 bg-white px-4 py-3.5 text-left shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-accent/40 hover:shadow-md dark:border-zinc-700 dark:bg-zinc-800"
+    >
+      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-accent text-accent-foreground">
+        <svg viewBox="0 0 24 24" fill="currentColor" className="ml-0.5 h-4 w-4">
+          <path d="M8 5v14l11-7z" />
+        </svg>
+      </span>
+      <span className="flex-1">
+        <span className="block text-sm font-semibold text-accent">이용 가이드 보러가기</span>
+        <span className="mt-0.5 block text-xs text-zinc-600 dark:text-zinc-400">
+          검색부터 기준서 확인까지, 화면으로 안내
+        </span>
+      </span>
+      <span className="text-accent">→</span>
+    </button>
+  );
+}
+
+// 홈 화면 맨 아래 큰 배너 - 검색 진입점은 이제 헤더에도 있어 중복이라, 여기는 상대적으로
+// 덜 눈에 띄는 이용가이드를 마지막으로 한 번 더 안내한다.
+export function GuideModalBanner() {
+  return (
+    <button
+      type="button"
+      onClick={openGuideModal}
+      className="flex w-full flex-col items-center gap-3 rounded-2xl border border-accent/20 bg-accent-soft px-6 py-6 text-center transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md sm:flex-row sm:justify-between sm:text-left"
+    >
+      <p className="text-base font-bold tracking-tight text-foreground sm:text-lg">
+        이용 방법이 궁금하다면?
+        <br className="hidden sm:block" /> 검색부터 기준서 확인까지 화면으로 안내해드려요.
+      </p>
+      <span className="shrink-0 rounded-full bg-accent px-5 py-2.5 text-sm font-semibold text-accent-foreground shadow-sm">
+        이용가이드 보기 →
+      </span>
+    </button>
+  );
+}
+
+// 실제 모달 - layout.tsx에 한 번만 마운트해 어느 페이지에서든 openGuideModal()로 열 수
+// 있게 한다.
 export function GuideModal() {
-  const [open, setOpen] = useState(false);
+  const open = useSyncExternalStore(subscribeGuide, getGuideSnapshot, getGuideServerSnapshot);
   const [guideIndex, setGuideIndex] = useState(0);
   const [step, setStep] = useState(0);
   // "재생 준비 끝"과 "지금 실제로 재생 중"은 다르다 - 크롬이 절전으로 강제 정지시키는
@@ -79,7 +155,7 @@ export function GuideModal() {
   useEffect(() => {
     if (!open) return;
     function onKey(e: KeyboardEvent) {
-      if (e.key === "Escape") setOpen(false);
+      if (e.key === "Escape") closeGuideModal();
     }
     document.addEventListener("keydown", onKey);
     // body에 overflow:hidden만 걸면 세로 스크롤바가 사라지면서 콘텐츠 폭이 스크롤바
@@ -93,6 +169,21 @@ export function GuideModal() {
       document.body.style.overflow = "";
       document.body.style.paddingRight = "";
     };
+  }, [open]);
+
+  useEffect(() => {
+    // 모달이 열릴 때마다 항상 첫 번째 가이드의 처음부터 다시 시작한다. 이 컴포넌트는
+    // 전역에 한 번만 마운트되어 있으니(열려도 리마운트되지 않음) guideIndex가 이미
+    // 0이어도 재생을 다시 걸어야 한다 - [guideIndex] 이펙트만으로는 값이 안 바뀌어
+    // 트리거되지 않는다.
+    if (!open) return;
+    setGuideIndex(0);
+    setStep(0);
+    const v = videoRefs.current[0];
+    if (!v) return;
+    v.currentTime = 0;
+    safePlay(v);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
 
   useEffect(() => {
@@ -117,32 +208,10 @@ export function GuideModal() {
 
   return (
     <>
-      <button
-        type="button"
-        onClick={() => {
-          setGuideIndex(0);
-          setOpen(true);
-        }}
-        className="flex w-full items-center gap-3 rounded-xl border border-zinc-200 bg-white px-4 py-3.5 text-left shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-accent/40 hover:shadow-md dark:border-zinc-700 dark:bg-zinc-800"
-      >
-        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-accent text-accent-foreground">
-          <svg viewBox="0 0 24 24" fill="currentColor" className="ml-0.5 h-4 w-4">
-            <path d="M8 5v14l11-7z" />
-          </svg>
-        </span>
-        <span className="flex-1">
-          <span className="block text-sm font-semibold text-accent">이용 가이드 보러가기</span>
-          <span className="mt-0.5 block text-xs text-zinc-600 dark:text-zinc-400">
-            검색부터 기준서 확인까지, 화면으로 안내
-          </span>
-        </span>
-        <span className="text-accent">→</span>
-      </button>
-
       {open && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4"
-          onClick={() => setOpen(false)}
+          onClick={closeGuideModal}
         >
           <div
             className="w-full max-w-2xl overflow-hidden rounded-xl bg-white shadow-2xl dark:bg-zinc-800"
@@ -167,7 +236,7 @@ export function GuideModal() {
               </div>
               <button
                 type="button"
-                onClick={() => setOpen(false)}
+                onClick={closeGuideModal}
                 aria-label="닫기"
                 className="text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200"
               >

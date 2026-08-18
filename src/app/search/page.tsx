@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { CompanySearch } from "@/components/CompanySearch";
 import { searchCompanies } from "@/db/queries";
 
 export default async function SearchPage({
@@ -12,25 +13,9 @@ export default async function SearchPage({
   return (
     <div className="flex flex-1 flex-col bg-zinc-50 dark:bg-zinc-900">
       <main className="mx-auto w-full max-w-3xl flex-1 px-6 pt-10 pb-16">
-        <Link href="/start" className="text-sm text-accent hover:underline">
-          ← 다른 방식으로 찾기
-        </Link>
-
-        <form action="/search" className="mt-4 flex gap-2">
-          <input
-            type="text"
-            name="q"
-            defaultValue={q}
-            placeholder="기업이름을 입력하세요"
-            className="flex-1 rounded-lg border border-zinc-300 px-4 py-2 text-sm outline-none focus:border-accent dark:border-zinc-700 dark:bg-zinc-900"
-          />
-          <button
-            type="submit"
-            className="rounded-lg bg-accent px-4 py-2 text-sm font-medium text-accent-foreground"
-          >
-            검색
-          </button>
-        </form>
+        <div>
+          <CompanySearch defaultQuery={q} />
+        </div>
 
         {q.trim() && (
           <p className="mt-6 text-sm text-zinc-500 dark:text-zinc-400">

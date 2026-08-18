@@ -10,8 +10,8 @@ type Suggestion = {
   industryName: string | null;
 };
 
-export function CompanySearch() {
-  const [query, setQuery] = useState("");
+export function CompanySearch({ defaultQuery = "" }: { defaultQuery?: string }) {
+  const [query, setQuery] = useState(defaultQuery);
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [open, setOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(-1);

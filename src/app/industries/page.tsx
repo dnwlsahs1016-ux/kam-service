@@ -9,10 +9,7 @@ export default async function IndustriesPage() {
   return (
     <div className="flex flex-1 flex-col bg-zinc-50 dark:bg-zinc-900">
       <main className="mx-auto w-full max-w-3xl flex-1 px-6 pt-10 pb-16">
-        <Link href="/start" className="text-sm text-accent hover:underline">
-          ← 다른 방식으로 찾기
-        </Link>
-        <h1 className="mt-2 text-2xl font-semibold tracking-tight">업종에서 직접 확인</h1>
+        <h1 className="text-2xl font-semibold tracking-tight">업종에서 직접 확인</h1>
         <p className="mt-2 text-zinc-600 dark:text-zinc-400">
           업종을 선택하면 그 업종에서 실제로 보고된 핵심감사사항을 카테고리별로 볼 수 있습니다.
         </p>
