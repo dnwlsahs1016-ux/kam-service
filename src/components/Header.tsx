@@ -59,7 +59,7 @@ export function Header() {
   const pathname = usePathname();
 
   return (
-    <header className="sticky top-0 z-40 bg-zinc-50 dark:bg-zinc-900">
+    <header className="sticky top-0 z-40 bg-zinc-50/95 backdrop-blur-md dark:bg-zinc-900/95">
       <div className="mx-auto flex w-full max-w-3xl items-center justify-between gap-2 px-4 py-3 sm:px-6 sm:py-4">
         <Link
           href="/"

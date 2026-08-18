@@ -28,6 +28,10 @@
   --accent-soft: #2a1a10;
 }
 
+html {
+  scroll-behavior: smooth; /* "더 알아보기" 같은 페이지 내 앵커 이동을 부드럽게 */
+}
+
 body {
   background: var(--background);
   color: var(--foreground);

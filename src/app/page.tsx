@@ -176,18 +176,22 @@ export default async function Home() {
             </div>
           </div>
 
-          <div className="absolute bottom-6 flex flex-col items-center gap-1 text-zinc-400 dark:text-zinc-600">
+          <a
+            href="#story"
+            className="absolute bottom-6 flex flex-col items-center gap-1 text-zinc-400 hover:text-accent dark:text-white dark:hover:text-accent"
+          >
             <span className="text-xs">더 알아보기</span>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="h-4 w-4 animate-bounce">
               <path d="m6 9 6 6 6-6" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
-          </div>
+          </a>
         </section>
       </main>
 
       {/* "더 알아보기" 지점부터 배경 톤을 바꿔서, 히어로(제품 소개)와 설명 섹션 사이에
-          실제 경계가 있는 것처럼 보이게 한다 - 스크롤한 보람이 느껴지도록. */}
-      <div className="bg-white dark:bg-zinc-800">
+          실제 경계가 있는 것처럼 보이게 한다 - 스크롤한 보람이 느껴지도록. id="story"는
+          "더 알아보기" 클릭 시 스크롤 대상 - scroll-mt로 고정 헤더에 안 가리게 한다. */}
+      <div id="story" className="scroll-mt-16 bg-white dark:bg-zinc-800">
         <div className="mx-auto w-full max-w-3xl px-6 py-16">
         <div className="flex flex-col gap-16">
           {STORY.map((s, i) => {
