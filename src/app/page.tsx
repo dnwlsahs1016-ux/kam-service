@@ -178,12 +178,14 @@ export default async function Home() {
 
           <a
             href="#story"
-            className="absolute bottom-6 flex flex-col items-center gap-1 text-zinc-400 hover:text-accent dark:text-white dark:hover:text-accent"
+            className="absolute bottom-6 flex flex-col items-center gap-2 text-zinc-500 hover:text-accent dark:text-zinc-300 dark:hover:text-accent"
           >
-            <span className="text-xs">더 알아보기</span>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="h-4 w-4 animate-bounce">
-              <path d="m6 9 6 6 6-6" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
+            <span className="text-sm font-medium">더 알아보기</span>
+            <span className="flex h-8 w-8 animate-bounce items-center justify-center rounded-full border border-current">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="h-5 w-5">
+                <path d="m6 9 6 6 6-6" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </span>
           </a>
         </section>
       </main>
