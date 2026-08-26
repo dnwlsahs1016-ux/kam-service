@@ -120,7 +120,10 @@ def main():
         item = data["list"][0]
         adtor = (item.get("adtor") or "").strip()
         recovered = False
-        if not adtor or adtor == "-":
+        # "-"뿐 아니라 "해당사항 없음"도 실제 감사인 이름이 아니라 데이터 없음을 뜻하는
+        # 값이다 - 이걸 걸러내지 않으면 실제 감사인처럼 저장되어, 예를 들어 화면의
+        # "감사인변경(이전법인→해당사항 없음)" 배지처럼 잘못된 정보로 노출된다.
+        if not adtor or adtor in ("-", "해당사항 없음"):
             rcept_no = item.get("rcept_no")
             fallback = None
             if rcept_no:
