@@ -82,6 +82,7 @@ const CATEGORY_TO_IFRS: Record<string, IfrsRef[]> = {
   "특수관계자 거래": [ref("1024")],
   "금융상품 공정가치평가": [ref("1109"), ref("1113")],
   "관계기업·종속기업 지분가치평가": [ref("1028"), ref("1110")],
+  "보험계약부채": [ref("1117")],
 };
 
 export function getIfrsRefsForCategory(category: string): IfrsRef[] {
